@@ -1,19 +1,34 @@
+import { useState } from "react";
+import { parseClu } from "@mapequation/infomap/parser";
+import { FormControl, FormLabel, Switch } from "@chakra-ui/react";
+import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import Network from "./Network";
 import parseStates from "../lib/parse-states";
-import { parseClu } from "@mapequation/infomap/parser";
 import mergeStatesClu from "../lib/merge-states-clu";
-import type { CluStateNode } from "@mapequation/infomap/filetypes";
+import lumpStateNodes from "../lib/lump-states";
 
 function App() {
+  const [useLumping, setUseLumping] = useState(true);
   const states = parseStates(net.split("\n").filter(Boolean));
   const clusters = parseClu<CluStateNode>(clu);
-  const network = mergeStatesClu(states, clusters);
-  console.dir(network);
+  let network = mergeStatesClu(states, clusters);
+
+  if (useLumping) network = lumpStateNodes(network);
 
   return (
-    <div>
+    <>
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor="lumping" mb="0">
+          Use lumping
+        </FormLabel>
+        <Switch
+          id="lumping"
+          isChecked={useLumping}
+          onChange={(event) => setUseLumping(event.target.checked)}
+        />
+      </FormControl>
       <Network network={network} />
-    </div>
+    </>
   );
 }
 

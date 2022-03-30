@@ -1,6 +1,6 @@
 import type { FlowStateNetwork, FlowStateNode } from "./merge-states-clu";
 
-export function lumpStateNodes({
+export default function lumpStateNodes({
   nodes,
   links,
   states,
@@ -21,8 +21,10 @@ export function lumpStateNodes({
   type AggregatedStateId = number;
   const stateIdtoAggregatedStateId = new Map<StateId, AggregatedStateId>();
 
-  type ModuleId = number;
+  let aggregatedStateIds = 0;
+
   for (const states of statesByPhysicalNode.values()) {
+    type ModuleId = number;
     const statesByModuleId = new Map<ModuleId, FlowStateNode[]>();
 
     for (const state of states) {
@@ -33,11 +35,12 @@ export function lumpStateNodes({
     }
 
     for (const states of statesByModuleId.values()) {
+      const aggregatedStateId = aggregatedStateIds++;
       aggregatedStates.push({
         ...states[0],
-        flow: nodes.reduce((flow, node) => flow + node.flow, 0),
+        id: aggregatedStateId,
+        flow: states.reduce((flow, state) => flow + state.flow, 0),
       });
-      const aggregatedStateId = states[0].id;
       for (const state of states) {
         stateIdtoAggregatedStateId.set(state.id, aggregatedStateId);
       }
@@ -51,8 +54,8 @@ export function lumpStateNodes({
   >();
 
   for (const link of links) {
-    let source = stateIdtoAggregatedStateId.get(link.source)!;
-    let target = stateIdtoAggregatedStateId.get(link.target)!;
+    const source = stateIdtoAggregatedStateId.get(link.source)!;
+    const target = stateIdtoAggregatedStateId.get(link.target)!;
     if (!aggregatedStateLinks.has(source)) {
       aggregatedStateLinks.set(source, new Map());
     }
@@ -62,8 +65,8 @@ export function lumpStateNodes({
 
   const aggregatedLinks = [];
 
-  for (let [source, targets] of aggregatedStateLinks.entries()) {
-    for (let [target, weight] of targets.entries()) {
+  for (const [source, targets] of aggregatedStateLinks.entries()) {
+    for (const [target, weight] of targets.entries()) {
       aggregatedLinks.push({ source, target, weight });
     }
   }
