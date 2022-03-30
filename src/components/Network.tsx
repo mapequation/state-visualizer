@@ -1,15 +1,16 @@
 import { PropsWithChildren, useEffect, useRef } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
-import { forceRadial } from "../../lib/d3-force";
+import { forceRadial } from "../lib/d3-force";
 import {
   FlowNode,
   FlowStateNetwork,
   FlowStateNode,
   Link,
-} from "../../lib/merge-states-clu";
+} from "../lib/merge-states-clu";
 
 type NodeDatum = FlowNode & {
+  states: StateNodeDatum[];
   x: number;
   y: number;
   fx?: number;
@@ -35,38 +36,45 @@ type NetworkDatum = {
   links: LinkDatum[];
 };
 
-export interface NetworkProps {
-  network: FlowStateNetwork;
-  nodeRadius?: number;
-}
-
 const fillColor = c3.colors(512, { scheme: "Sinebow" });
+
 const strokeColor = c3.colors(512, {
   scheme: "Sinebow",
   lightness: 0.4,
   saturation: 0.5,
 });
 
+export interface NetworkProps {
+  network: FlowStateNetwork;
+  nodeRadius?: number;
+  showNames?: boolean;
+}
+
 export default function Network({
   network,
   nodeRadius = 40,
+  showNames = false,
   ...props
 }: PropsWithChildren<NetworkProps>) {
   const ref = useRef<SVGSVGElement>(null);
-  const width = 1000;
-  const height = 1000;
 
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
 
   const linkWidth = (() => {
     const maxLinkWeight = Math.max(...links.map((link) => link.weight));
-    return d3.scaleLinear().domain([0, maxLinkWeight]).range([0.1, 3]);
+    return d3.scaleLinear().domain([0, maxLinkWeight]).range([0.2, 5]);
   })();
 
   const stateRadius = (() => {
     const maxStateFlow = Math.max(...states.map((state) => state.flow));
-    return d3.scaleSqrt().domain([0, maxStateFlow]).range([5, 25]);
+    const maxNumStates = Math.max(...nodes.map((node) => node.states.length));
+    const dist = nodeRadius / 2;
+    const maxRadius = Math.min(
+      nodeRadius,
+      Math.max((dist * Math.PI) / maxNumStates, 15)
+    );
+    return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   })();
 
   useEffect(() => {
@@ -91,7 +99,7 @@ export default function Network({
 
     const simulation = d3
       .forceSimulation(nodes)
-      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("center", d3.forceCenter())
       .force("collide", d3.forceCollide(2 * nodeRadius))
       .force("charge", d3.forceManyBody().strength(-1000))
       .force("link", d3.forceLink(physicalLinks).distance(100));
@@ -100,17 +108,20 @@ export default function Network({
 
     const stateSimulation = d3
       .forceSimulation(states)
-      .force("collide", d3.forceCollide(20))
+      .force("collide", d3.forceCollide(10))
       .force(
         "radial",
         forceRadial(
-          nodeRadius / 3,
+          nodeRadius / 2,
           (d: StateNodeDatum) => d.physicalNode.x,
           (d: StateNodeDatum) => d.physicalNode.y
         ).strength(1)
       );
 
     stateSimulation.alphaDecay(decay);
+
+    simulation.tick(100);
+    stateSimulation.tick(100);
 
     const dragHelper = {
       start: (d: NodeDatum | StateNodeDatum) => {
@@ -223,12 +234,9 @@ export default function Network({
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      viewBox={`-${width / 2} -${height / 2} ${width} ${height}`}
-      style={{
-        border: "1px solid black",
-      }}
+      width="100%"
+      height="100%"
+      viewBox={`-2000 -2000 4000 4000`}
     >
       <defs>
         <marker
@@ -253,6 +261,7 @@ export default function Network({
               r={nodeRadius}
               fill="#fafafa"
               stroke="#333"
+              strokeWidth={2}
             />
           ))}
         </g>
@@ -286,22 +295,30 @@ export default function Network({
             />
           ))}
         </g>
-        <g className="names">
-          {nodes.map((node) => (
-            <text
-              className="name"
-              key={node.id}
-              x={0}
-              y={0}
-              textAnchor="start"
-              fontFamily="Helvetica"
-              fontSize={40}
-              fill="#333"
-            >
-              {node.name}
-            </text>
-          ))}
-        </g>
+        {showNames && (
+          <g className="names">
+            {nodes.map((node) => (
+              <text
+                className="name"
+                key={node.id}
+                x={0}
+                y={0}
+                textAnchor="start"
+                dominantBaseline="central"
+                fontFamily="Helvetica"
+                fontSize={20}
+                dx={nodeRadius}
+                dy={-30}
+                fill="#333"
+                stroke="#fff"
+                strokeWidth={4}
+                paintOrder="stroke"
+              >
+                {node.name}
+              </text>
+            ))}
+          </g>
+        )}
       </g>
     </svg>
   );
@@ -310,7 +327,7 @@ export default function Network({
 function networkToDatum(network: FlowStateNetwork): NetworkDatum {
   type PhysicalId = number;
   const nodesById = new Map<PhysicalId, NodeDatum>(
-    network.nodes.map((node) => [node.id, { ...node, x: 0, y: 0 }])
+    network.nodes.map((node) => [node.id, { ...node, states: [], x: 0, y: 0 }])
   );
 
   const statesById = new Map(
@@ -322,6 +339,7 @@ function networkToDatum(network: FlowStateNetwork): NetworkDatum {
         x: 0,
         y: 0,
       };
+      physicalNode.states.push(stateNode);
       return [state.id, stateNode];
     })
   );

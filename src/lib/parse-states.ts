@@ -23,7 +23,9 @@ export type StateNetwork = {
 
 type Context = "nodes" | "states" | "links";
 
-export default function parseStates(lines: string[]): StateNetwork {
+export default function parseStates(lines: string | string[]): StateNetwork {
+  lines = Array.isArray(lines) ? lines : lines.split("\n").filter(Boolean);
+
   const nodes = [];
   const states = [];
   const links = [];
@@ -54,7 +56,7 @@ export default function parseStates(lines: string[]): StateNetwork {
       const [id, ...name] = line.split(" ");
       nodes.push({
         id: +id,
-        name: parseName(name.join(" ")) ?? "",
+        name: parseName(name.join(" ")) ?? id,
       });
     } else if (context === "states") {
       const [id, physicalId, ...name] = line.split(" ");
