@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../state-network-visualizer/.idea/state-network-visualizer.iml" filepath="$PROJECT_DIR$/../state-network-visualizer/.idea/state-network-visualizer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/state-visualizer.iml" filepath="$PROJECT_DIR$/.idea/state-visualizer.iml" />
     </modules>
   </component>
