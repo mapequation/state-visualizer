@@ -39,11 +39,14 @@ export default function CanvasRenderer({
       }
 
       for (const link of links) {
+        const lineWidth = linkWidth(link.weight);
+        if (currentTransform.k * lineWidth < 0.02) continue;
+
         const { x1, y1, x2, y2 } = drawLink(link);
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
-        ctx.lineWidth = linkWidth(link.weight);
+        ctx.lineWidth = lineWidth;
         ctx.stroke();
       }
 
