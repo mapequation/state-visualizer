@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
-import { forceRadial } from "../lib/d3-force";
-import aggregatePhysicalLinks from "../lib/aggregate-links";
-import networkToDatum from "../lib/network-to-datum";
-import type { FlowStateNetwork } from "../lib/merge-states-clu";
-import type { LinkDatum, NodeDatum, StateNodeDatum } from "../types/datum";
+import aggregatePhysicalLinks from "../../lib/aggregate-links";
+import networkToDatum from "../../lib/network-to-datum";
+import useSimulation from "../../hooks/useSimulation";
+import type { FlowStateNetwork } from "../../lib/merge-states-clu";
+import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 export interface NetworkProps {
   network: FlowStateNetwork;
@@ -32,6 +32,15 @@ export default function Network({
 
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
+
+  const { simulation, stateSimulation } = useSimulation({
+    nodes,
+    states,
+    links: physicalLinks,
+    nodeRadius,
+    nodeCharge,
+    linkDistance,
+  });
 
   const fillColor = c3.colors(512, { scheme });
 
@@ -71,38 +80,9 @@ export default function Network({
       .scaleExtent([0.05, 1000])
       .on("zoom", function (event) {
         zoomable.attr("transform", event.transform);
-        event.preventDefault();
       });
 
     svg.call(zoom).on("dblclick.zoom", null);
-
-    const decay = 1 - Math.pow(0.001, 1 / 500);
-
-    const simulation = d3
-      .forceSimulation(nodes)
-      .force("center", d3.forceCenter())
-      .force("collide", d3.forceCollide(2 * nodeRadius))
-      .force("charge", d3.forceManyBody().strength(nodeCharge))
-      .force("link", d3.forceLink(physicalLinks).distance(linkDistance));
-
-    simulation.alphaDecay(decay);
-
-    const stateSimulation = d3
-      .forceSimulation(states)
-      .force("collide", d3.forceCollide(10))
-      .force(
-        "radial",
-        forceRadial(
-          nodeRadius / 2,
-          (d: StateNodeDatum) => d.physicalNode.x,
-          (d: StateNodeDatum) => d.physicalNode.y
-        ).strength(1)
-      );
-
-    stateSimulation.alphaDecay(decay);
-
-    simulation.tick(100);
-    stateSimulation.tick(100);
 
     const dragHelper = {
       start: (d: NodeDatum | StateNodeDatum) => {
@@ -219,6 +199,8 @@ export default function Network({
     stateRadius,
     linkDistance,
     nodeCharge,
+    simulation,
+    stateSimulation,
   ]);
 
   return (
@@ -226,7 +208,7 @@ export default function Network({
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       width="100%"
-      height="100vh"
+      height="100%"
       viewBox={`-2000 -2000 4000 4000`}
     >
       <defs>
