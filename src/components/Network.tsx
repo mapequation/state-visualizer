@@ -1,69 +1,49 @@
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
 import { forceRadial } from "../lib/d3-force";
-import {
-  FlowNode,
-  FlowStateNetwork,
-  FlowStateNode,
-  Link,
-} from "../lib/merge-states-clu";
-
-type NodeDatum = FlowNode & {
-  states: StateNodeDatum[];
-  x: number;
-  y: number;
-  fx?: number;
-  fy?: number;
-};
-
-type StateNodeDatum = FlowStateNode & {
-  physicalNode: NodeDatum;
-  x: number;
-  y: number;
-  fx?: number;
-  fy?: number;
-};
-
-type LinkDatum<NodeType = StateNodeDatum> = Omit<Link, "source" | "target"> & {
-  source: NodeType;
-  target: NodeType;
-};
-
-type NetworkDatum = {
-  nodes: NodeDatum[];
-  states: StateNodeDatum[];
-  links: LinkDatum[];
-};
-
-const fillColor = c3.colors(512, { scheme: "Sinebow" });
-
-const strokeColor = c3.colors(512, {
-  scheme: "Sinebow",
-  lightness: 0.4,
-  saturation: 0.5,
-});
+import aggregatePhysicalLinks from "../lib/aggregate-links";
+import networkToDatum from "../lib/network-to-datum";
+import type { FlowStateNetwork } from "../lib/merge-states-clu";
+import type { LinkDatum, NodeDatum, StateNodeDatum } from "../types/datum";
 
 export interface NetworkProps {
   network: FlowStateNetwork;
   nodeRadius?: number;
+  linkDistance?: number;
+  linkWidthRange?: number[];
+  nodeCharge?: number;
   showNames?: boolean;
+  fontSize?: number;
+  scheme?: c3.SchemeName;
 }
 
 export default function Network({
   network,
   nodeRadius = 40,
+  linkDistance = 100,
+  linkWidthRange = [0.2, 5],
+  nodeCharge = -500,
   showNames = false,
-  ...props
-}: PropsWithChildren<NetworkProps>) {
+  fontSize = 40,
+  scheme = "Sinebow",
+}: NetworkProps) {
   const ref = useRef<SVGSVGElement>(null);
 
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
 
+  const fillColor = c3.colors(512, { scheme });
+
+  const strokeColor = c3.colors(512, {
+    scheme,
+    lightness: 0.4,
+    saturation: 0.5,
+  });
+
   const linkWidth = (() => {
     const maxLinkWeight = Math.max(...links.map((link) => link.weight));
-    return d3.scaleLinear().domain([0, maxLinkWeight]).range([0.2, 5]);
+    return d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
   })();
 
   const stateRadius = (() => {
@@ -91,18 +71,19 @@ export default function Network({
       .scaleExtent([0.05, 1000])
       .on("zoom", function (event) {
         zoomable.attr("transform", event.transform);
+        event.preventDefault();
       });
 
     svg.call(zoom).on("dblclick.zoom", null);
 
-    const decay = 1 - Math.pow(0.001, 1 / 1000);
+    const decay = 1 - Math.pow(0.001, 1 / 500);
 
     const simulation = d3
       .forceSimulation(nodes)
       .force("center", d3.forceCenter())
       .force("collide", d3.forceCollide(2 * nodeRadius))
-      .force("charge", d3.forceManyBody().strength(-1000))
-      .force("link", d3.forceLink(physicalLinks).distance(100));
+      .force("charge", d3.forceManyBody().strength(nodeCharge))
+      .force("link", d3.forceLink(physicalLinks).distance(linkDistance));
 
     simulation.alphaDecay(decay);
 
@@ -228,14 +209,24 @@ export default function Network({
 
       name.attr("x", (d) => d.x).attr("y", (d) => d.y);
     });
-  }, [ref, nodes, states, links, physicalLinks, nodeRadius, stateRadius]);
+  }, [
+    ref,
+    nodes,
+    states,
+    links,
+    physicalLinks,
+    nodeRadius,
+    stateRadius,
+    linkDistance,
+    nodeCharge,
+  ]);
 
   return (
     <svg
       ref={ref}
       xmlns="http://www.w3.org/2000/svg"
       width="100%"
-      height="100%"
+      height="100vh"
       viewBox={`-2000 -2000 4000 4000`}
     >
       <defs>
@@ -306,9 +297,9 @@ export default function Network({
                 textAnchor="start"
                 dominantBaseline="central"
                 fontFamily="Helvetica"
-                fontSize={20}
+                fontSize={fontSize}
                 dx={nodeRadius}
-                dy={-30}
+                dy={-fontSize}
                 fill="#333"
                 stroke="#fff"
                 strokeWidth={4}
@@ -322,65 +313,4 @@ export default function Network({
       </g>
     </svg>
   );
-}
-
-function networkToDatum(network: FlowStateNetwork): NetworkDatum {
-  type PhysicalId = number;
-  const nodesById = new Map<PhysicalId, NodeDatum>(
-    network.nodes.map((node) => [node.id, { ...node, states: [], x: 0, y: 0 }])
-  );
-
-  const statesById = new Map(
-    network.states.map((state) => {
-      const physicalNode = nodesById.get(state.physicalId)!;
-      const stateNode = {
-        ...state,
-        physicalNode,
-        x: 0,
-        y: 0,
-      };
-      physicalNode.states.push(stateNode);
-      return [state.id, stateNode];
-    })
-  );
-
-  const links = network.links.map((link) => {
-    const source = statesById.get(link.source)!;
-    const target = statesById.get(link.target)!;
-    return { source, target, weight: link.weight };
-  });
-
-  return {
-    nodes: Array.from(nodesById.values()),
-    states: Array.from(statesById.values()),
-    links,
-  };
-}
-
-function aggregatePhysicalLinks(links: LinkDatum[]): LinkDatum<NodeDatum>[] {
-  const physicalLinks = links.map(({ source, target, weight }) => ({
-    source: source.physicalNode,
-    target: target.physicalNode,
-    weight,
-  }));
-
-  const linkSources = new Map();
-
-  physicalLinks.forEach((link) => {
-    if (!linkSources.has(link.source)) {
-      linkSources.set(link.source, new Map());
-    }
-    const targets = linkSources.get(link.source)!;
-    targets.set(link.target, (targets.get(link.target) ?? 0) + link.weight);
-  });
-
-  const aggregatedPhysLinks = [];
-
-  for (let [source, targets] of linkSources) {
-    for (let [target, weight] of targets) {
-      aggregatedPhysLinks.push({ source, target, weight });
-    }
-  }
-
-  return aggregatedPhysLinks;
 }
