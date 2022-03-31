@@ -10,8 +10,12 @@ interface UseSimulationOptions {
   nodeCharge: number;
   linkDistance: number;
   initialIterations?: number;
-  //onClick: (node: StateNodeDatum) => void;
 }
+
+export type Simulation = {
+  simulation: d3.Simulation<NodeDatum, LinkDatum<NodeDatum>>;
+  stateSimulation: d3.Simulation<StateNodeDatum, LinkDatum<StateNodeDatum>>;
+};
 
 export default function useSimulation({
   nodes,
@@ -21,7 +25,7 @@ export default function useSimulation({
   nodeCharge,
   linkDistance,
   initialIterations = 100,
-}: UseSimulationOptions) {
+}: UseSimulationOptions): Simulation {
   const decay = 1 - Math.pow(0.001, 1 / 500);
 
   const simulation = d3
