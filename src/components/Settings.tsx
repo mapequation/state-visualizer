@@ -76,15 +76,17 @@ export default function Settings({
       </FormControl>
 
       <FormLabel mt={10}>Renderer</FormLabel>
-      <ButtonGroup isAttached colorScheme="blue">
+      <ButtonGroup isAttached>
         <Button
           isDisabled={renderer === "svg"}
+          colorScheme={renderer === "svg" ? "blue" : "gray"}
           onClick={() => setRenderer("svg")}
         >
           SVG
         </Button>
         <Button
           isDisabled={renderer === "canvas"}
+          colorScheme={renderer === "canvas" ? "blue" : "gray"}
           onClick={() => setRenderer("canvas")}
         >
           Canvas
