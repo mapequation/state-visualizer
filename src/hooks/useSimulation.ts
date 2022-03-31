@@ -10,6 +10,7 @@ interface UseSimulationOptions {
   nodeCharge: number;
   linkDistance: number;
   initialIterations?: number;
+  forceCenter?: number[];
 }
 
 export type Simulation = {
@@ -25,10 +26,11 @@ export default function useSimulation({
   nodeCharge,
   linkDistance,
   initialIterations = 100,
+  forceCenter = [0, 0],
 }: UseSimulationOptions): Simulation {
   const simulation = d3
     .forceSimulation(nodes)
-    .force("center", d3.forceCenter(2000, 2000))
+    .force("center", d3.forceCenter(forceCenter[0], forceCenter[1]))
     .force("collide", d3.forceCollide(2 * nodeRadius))
     .force("charge", d3.forceManyBody().strength(nodeCharge))
     .force("link", d3.forceLink(links).distance(linkDistance));

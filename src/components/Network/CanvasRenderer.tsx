@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import * as d3 from "d3";
 import type { RendererProps } from "./Network";
 import linkRenderer from "../../lib/link-renderer";
 
@@ -19,9 +20,12 @@ export default function CanvasRenderer({
 }: CanvasRendererProps) {
   const drawLink = linkRenderer(stateRadius);
 
-  const render = (ctx: CanvasRenderingContext2D) =>
-    simulation.on("tick", () => {
+  const render = (ctx: CanvasRenderingContext2D) => {
+    function draw(transform: any) {
+      ctx.save();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.translate(transform.x, transform.y);
+      ctx.scale(transform.k, transform.k);
 
       ctx.fillStyle = "#fafafa";
       ctx.strokeStyle = "#333";
@@ -54,21 +58,68 @@ export default function CanvasRenderer({
         ctx.stroke();
       }
 
-      if (!showNames) return;
-
-      ctx.font = `${fontSize}px sans-serif`;
-      ctx.textBaseline = "bottom";
-      ctx.fillStyle = "#333";
-      ctx.strokeStyle = "#fff";
-      ctx.lineWidth = 4;
-
-      for (const node of nodes) {
-        const x = node.x + nodeRadius;
-        const y = node.y - fontSize / 2;
-        ctx.strokeText(node.name, x, y);
-        ctx.fillText(node.name, x, y);
+      if (showNames) {
+        ctx.font = `${fontSize}px sans-serif`;
+        ctx.textBaseline = "bottom";
+        ctx.fillStyle = "#333";
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 4;
+        for (const node of nodes) {
+          const x = node.x + nodeRadius;
+          const y = node.y - fontSize / 2;
+          ctx.strokeText(node.name, x, y);
+          ctx.fillText(node.name, x, y);
+        }
       }
-    });
+
+      ctx.restore();
+    }
+
+    let currentTransform = d3.zoomIdentity
+      .translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+      .scale(0.4);
+
+    const zoom = d3
+      .zoom<HTMLCanvasElement, unknown>()
+      .scaleExtent([0.05, 1000])
+      .on("zoom", (e) => {
+        currentTransform = e.transform;
+        draw(currentTransform);
+      });
+
+    const drag = d3
+      .drag<HTMLCanvasElement, unknown>()
+      .subject((event) => {
+        const point = currentTransform.invert([event.x, event.y]);
+        return simulation.find(point[0], point[1], 50);
+      })
+      .on("start", (event) => {
+        if (!event.subject) return;
+        simulation.alphaTarget(0.3).restart();
+        stateSimulation.alphaTarget(0.8).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      })
+      .on("drag", (event) => {
+        if (!event.subject) return;
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      })
+      .on("end", (event) => {
+        if (!event.subject) return;
+        simulation.alphaTarget(0);
+        stateSimulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+      });
+
+    d3.select(ctx.canvas)
+      .call(drag)
+      .call(zoom)
+      .call(zoom.transform, currentTransform);
+
+    simulation.on("tick", () => draw(currentTransform));
+  };
 
   return <Canvas render={render} />;
 }
@@ -81,12 +132,30 @@ function Canvas({ render }: CanvasProps) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const context = ref?.current?.getContext("2d");
+    const currentRef = ref.current;
+    if (!currentRef) return;
+
+    const resize = () => {
+      currentRef.width = currentRef.clientWidth;
+      currentRef.height = currentRef.clientHeight;
+    };
+
+    resize();
+
+    window.addEventListener("resize", resize);
+
+    const context = currentRef.getContext("2d");
     if (!context) return;
+
     render(context);
   }, [ref, render]);
 
   return (
-    <canvas width="4000" height="4000" style={{ width: "100%" }} ref={ref} />
+    <canvas
+      width="1000"
+      height="1000"
+      style={{ width: "100%", height: "100%" }}
+      ref={ref}
+    />
   );
 }

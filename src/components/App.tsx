@@ -59,7 +59,7 @@ export default function App() {
         </Box>
       </GridItem>
 
-      <GridItem w="100%">
+      <GridItem w="100%" overflow="hidden">
         <ErrorBoundary>
           {network && (
             <Network

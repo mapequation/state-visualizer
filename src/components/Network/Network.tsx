@@ -47,6 +47,8 @@ export default function Network({
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
 
+  const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
+
   const simulation = useSimulation({
     nodes,
     states,
@@ -54,6 +56,7 @@ export default function Network({
     nodeRadius,
     nodeCharge,
     linkDistance,
+    forceCenter,
   });
 
   const fillColor = c3.colors(512, { scheme });
