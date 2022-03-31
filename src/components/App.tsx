@@ -53,7 +53,9 @@ export default function App() {
         <Box fontSize="sm" color="gray.500" mt={50}>
           By <a href="//antoneriksson.io">Anton Eriksson</a>
           <br />
-          <a href="//mapeqquation.org">mapequation.org</a>
+          <a href="//mapequation.org">mapequation.org</a>
+          <br />
+          <a href="//github.com/mapequation/state-visualizer">Source</a>
         </Box>
       </GridItem>
 
