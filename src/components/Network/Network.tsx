@@ -63,8 +63,8 @@ export default function Network({
 
   const strokeColor = c3.colors(512, {
     scheme,
-    lightness: 0.4,
-    saturation: 0.5,
+    lightness: 0.3,
+    saturation: 0.8,
   });
 
   const linkWidth = (() => {

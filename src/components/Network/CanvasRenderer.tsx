@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import type { RendererProps } from "./Network";
-import linkRenderer from "../../lib/link-renderer";
 
 interface CanvasRendererProps extends RendererProps {}
 
@@ -18,8 +17,6 @@ export default function CanvasRenderer({
   showNames,
   fontSize,
 }: CanvasRendererProps) {
-  const drawLink = linkRenderer(stateRadius);
-
   const render = (ctx: CanvasRenderingContext2D) => {
     function draw(transform: any) {
       ctx.save();
@@ -42,11 +39,14 @@ export default function CanvasRenderer({
         const lineWidth = linkWidth(link.weight);
         if (currentTransform.k * lineWidth < 0.02) continue;
 
-        const { x1, y1, x2, y2 } = drawLink(link);
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+        ctx.moveTo(link.source.x, link.source.y);
+        ctx.lineTo(link.target.x, link.target.y);
         ctx.lineWidth = lineWidth;
+        ctx.strokeStyle =
+          link.source.moduleId === link.target.moduleId
+            ? nodeStroke[link.source.moduleId]
+            : "#333";
         ctx.stroke();
       }
 
