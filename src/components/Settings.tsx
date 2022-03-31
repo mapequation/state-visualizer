@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormHelperText,
@@ -29,6 +31,8 @@ interface SettingsProps {
   setNodeCharge: (nodeCharge: number) => void;
   fontSize: number;
   setFontSize: (fontSize: number) => void;
+  renderer: "canvas" | "svg";
+  setRenderer: (renderer: "canvas" | "svg") => void;
 }
 
 export default function Settings({
@@ -44,6 +48,8 @@ export default function Settings({
   setNodeCharge,
   fontSize,
   setFontSize,
+  renderer,
+  setRenderer,
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
@@ -68,6 +74,22 @@ export default function Settings({
           node. Improves performance.
         </FormHelperText>
       </FormControl>
+
+      <FormLabel mt={10}>Renderer</FormLabel>
+      <ButtonGroup isAttached colorScheme="blue">
+        <Button
+          isDisabled={renderer === "svg"}
+          onClick={() => setRenderer("svg")}
+        >
+          SVG
+        </Button>
+        <Button
+          isDisabled={renderer === "canvas"}
+          onClick={() => setRenderer("canvas")}
+        >
+          Canvas
+        </Button>
+      </ButtonGroup>
 
       <FormControl mt={10}>
         <Flex alignItems="center">

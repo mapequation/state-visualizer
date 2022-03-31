@@ -15,6 +15,7 @@ export default function App() {
   const [linkDistance, setLinkDistance] = useState(100);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
   const [nodeCharge, setNodeCharge] = useState(-1000);
+  const [renderer, setRenderer] = useState<"canvas" | "svg">("svg");
 
   return (
     <Grid h="100vh" templateColumns="minmax(200px, 20vw) auto">
@@ -45,6 +46,8 @@ export default function App() {
           setNodeCharge={setNodeCharge}
           fontSize={fontSize}
           setFontSize={setFontSize}
+          renderer={renderer}
+          setRenderer={setRenderer}
         />
 
         <Box fontSize="sm" color="gray.500" mt={50}>
@@ -60,10 +63,12 @@ export default function App() {
             <Network
               network={useLumping ? lumpStateNodes(network) : network}
               fontSize={fontSize}
+              nodeRadius={40}
               linkDistance={linkDistance}
               linkWidthRange={linkWidthRange}
               nodeCharge={nodeCharge}
               showNames={showNames}
+              renderer={renderer}
             />
           )}
         </ErrorBoundary>

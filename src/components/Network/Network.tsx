@@ -3,14 +3,15 @@ import * as c3 from "@mapequation/c3";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
 import useSimulation, { Simulation } from "../../hooks/useSimulation";
-import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 import SVGRenderer from "./SvgRenderer";
+import CanvasRenderer from "./CanvasRenderer";
+import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 import { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 export interface SharedProps {
   showNames: boolean;
   fontSize: number;
-  nodeRadius?: number;
+  nodeRadius: number;
 }
 
 export interface NetworkProps extends SharedProps {
@@ -19,6 +20,7 @@ export interface NetworkProps extends SharedProps {
   linkWidthRange?: number[];
   nodeCharge?: number;
   scheme?: c3.SchemeName;
+  renderer?: "svg" | "canvas";
 }
 
 export interface RendererProps extends SharedProps {
@@ -28,7 +30,6 @@ export interface RendererProps extends SharedProps {
   linkWidth: (d: number) => number;
   stateRadius: (d: number) => number;
   nodes: NodeDatum[];
-  physicalLinks: LinkDatum<NodeDatum>[];
   states: StateNodeDatum[];
   links: LinkDatum[];
 }
@@ -40,6 +41,7 @@ export default function Network({
   linkWidthRange = [0.2, 5],
   nodeCharge = -500,
   scheme = "Sinebow",
+  renderer = "canvas",
   ...rendererProps
 }: NetworkProps) {
   const { nodes, states, links } = networkToDatum(network);
@@ -78,12 +80,13 @@ export default function Network({
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   })();
 
+  const Renderer = renderer === "svg" ? SVGRenderer : CanvasRenderer;
+
   return (
-    <SVGRenderer
+    <Renderer
       simulation={simulation}
       nodes={nodes}
       states={states}
-      physicalLinks={physicalLinks}
       links={links}
       nodeFill={fillColor}
       nodeStroke={strokeColor}

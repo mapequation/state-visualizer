@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import linkRenderer from "../../lib/link-renderer";
 import type { RendererProps } from "./Network";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
@@ -8,7 +9,6 @@ interface SVGRendererProps extends RendererProps {}
 export default function SVGRenderer({
   simulation: { simulation, stateSimulation },
   nodes,
-  physicalLinks,
   states,
   links,
   nodeFill,
@@ -114,29 +114,18 @@ export default function SVGRenderer({
     const link = svg.selectAll(".link").data(links);
     const name = svg.selectAll(".name").data(nodes);
 
-    const drawLink = function (d: LinkDatum) {
-      const x1 = d.source.x || 0;
-      const y1 = d.source.y || 0;
-      const x2 = d.target.x || 0;
-      const y2 = d.target.y || 0;
-      const dx = x2 - x1 || 1e-6;
-      const dy = y2 - y1 || 1e-6;
-      const l = Math.sqrt(dx * dx + dy * dy);
-      const dir = { x: dx / l, y: dy / l };
-
-      const r1 = stateRadius(d.source.flow);
-      const r2 = stateRadius(d.target.flow);
-
-      // @ts-ignore
-      d3.select(this)
-        .attr("x1", x1 + r1 * dir.x)
-        .attr("y1", y1 + r1 * dir.y)
-        .attr("x2", x2 - r2 * dir.x)
-        .attr("y2", y2 - r2 * dir.y);
-    };
+    const drawLink = linkRenderer(stateRadius);
 
     simulation.on("tick", () => {
-      link.each(drawLink);
+      link.each(function (d: LinkDatum) {
+        const { x1, y1, x2, y2 } = drawLink(d);
+        // @ts-ignore
+        d3.select(this)
+          .attr("x1", x1)
+          .attr("y1", y1)
+          .attr("x2", x2)
+          .attr("y2", y2);
+      });
 
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
 
@@ -144,16 +133,7 @@ export default function SVGRenderer({
 
       name.attr("x", (d) => d.x).attr("y", (d) => d.y);
     });
-  }, [
-    ref,
-    nodes,
-    physicalLinks,
-    states,
-    links,
-    stateRadius,
-    simulation,
-    stateSimulation,
-  ]);
+  }, [ref, nodes, states, links, stateRadius, simulation, stateSimulation]);
 
   return (
     <svg
@@ -161,7 +141,7 @@ export default function SVGRenderer({
       xmlns="http://www.w3.org/2000/svg"
       width="100%"
       height="100%"
-      viewBox={`-2000 -2000 4000 4000`}
+      viewBox="0 0 4000 4000"
     >
       <defs>
         <marker
