@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Box, Grid, GridItem, Heading } from "@chakra-ui/react";
 import Network from "./Network";
 import Settings from "./Settings";
@@ -62,20 +62,22 @@ export default function App() {
       </GridItem>
 
       <GridItem w="100%" overflow="hidden">
-        <ErrorBoundary>
-          {network && (
-            <Network
-              network={useLumping ? lumpStateNodes(network) : network}
-              fontSize={fontSize}
-              nodeRadius={40}
-              linkDistance={linkDistance}
-              linkWidthRange={linkWidthRange}
-              nodeCharge={nodeCharge}
-              showNames={showNames}
-              renderer={renderer}
-            />
-          )}
-        </ErrorBoundary>
+        <Suspense fallback={null}>
+          <ErrorBoundary>
+            {network && (
+              <Network
+                network={useLumping ? lumpStateNodes(network) : network}
+                fontSize={fontSize}
+                nodeRadius={40}
+                linkDistance={linkDistance}
+                linkWidthRange={linkWidthRange}
+                nodeCharge={nodeCharge}
+                showNames={showNames}
+                renderer={renderer}
+              />
+            )}
+          </ErrorBoundary>
+        </Suspense>
       </GridItem>
     </Grid>
   );
