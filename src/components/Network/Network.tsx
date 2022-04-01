@@ -8,6 +8,7 @@ import CanvasRenderer from "./CanvasRenderer";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 import { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 import WebGLRenderer from "./WebGlRenderer";
+import { useMemo } from "react";
 
 export interface SharedProps {
   showNames: boolean;
@@ -68,12 +69,12 @@ export default function Network({
     saturation: 0.8,
   });
 
-  const linkWidth = (() => {
+  const linkWidth = useMemo(() => {
     const maxLinkWeight = Math.max(...links.map((link) => link.weight));
     return d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
-  })();
+  }, [links, linkWidthRange]);
 
-  const stateRadius = (() => {
+  const stateRadius = useMemo(() => {
     const maxStateFlow = Math.max(...states.map((state) => state.flow));
     const maxNumStates = Math.max(...nodes.map((node) => node.states.length));
     const dist = nodeRadius / 2;
@@ -82,14 +83,15 @@ export default function Network({
       Math.max((dist * Math.PI) / maxNumStates, 15)
     );
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
-  })();
+  }, [nodes, states, nodeRadius]);
 
-  const Renderer =
-    renderer === "svg"
+  const Renderer = useMemo(() => {
+    return renderer === "svg"
       ? SVGRenderer
       : renderer === "webgl"
       ? WebGLRenderer
       : CanvasRenderer;
+  }, [renderer]);
 
   return (
     <Renderer

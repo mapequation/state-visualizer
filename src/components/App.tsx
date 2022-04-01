@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { Box, Grid, GridItem, Heading } from "@chakra-ui/react";
 import Network from "./Network";
 import Settings from "./Settings";
@@ -18,6 +18,11 @@ export default function App() {
   const [renderer, setRenderer] = useState<"canvas" | "svg" | "webgl">(
     "canvas"
   );
+
+  const net = useMemo(() => {
+    if (!network) return;
+    return useLumping ? lumpStateNodes(network) : network;
+  }, [network, useLumping]);
 
   return (
     <Grid h="100vh" templateColumns="minmax(200px, 20vw) auto">
@@ -64,9 +69,9 @@ export default function App() {
       <GridItem w="100%" overflow="hidden">
         <Suspense fallback={null}>
           <ErrorBoundary>
-            {network && (
+            {net && (
               <Network
-                network={useLumping ? lumpStateNodes(network) : network}
+                network={net}
                 fontSize={fontSize}
                 nodeRadius={40}
                 linkDistance={linkDistance}
