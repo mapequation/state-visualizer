@@ -7,6 +7,7 @@ import SVGRenderer from "./SvgRenderer";
 import CanvasRenderer from "./CanvasRenderer";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 import { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
+import WebGLRenderer from "./WebGlRenderer";
 
 export interface SharedProps {
   showNames: boolean;
@@ -20,7 +21,7 @@ export interface NetworkProps extends SharedProps {
   linkWidthRange?: number[];
   nodeCharge?: number;
   scheme?: c3.SchemeName;
-  renderer?: "svg" | "canvas";
+  renderer?: "svg" | "canvas" | "webgl";
 }
 
 export interface RendererProps extends SharedProps {
@@ -83,7 +84,12 @@ export default function Network({
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   })();
 
-  const Renderer = renderer === "svg" ? SVGRenderer : CanvasRenderer;
+  const Renderer =
+    renderer === "svg"
+      ? SVGRenderer
+      : renderer === "webgl"
+      ? WebGLRenderer
+      : CanvasRenderer;
 
   return (
     <Renderer

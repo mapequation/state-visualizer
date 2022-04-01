@@ -31,8 +31,8 @@ interface SettingsProps {
   setNodeCharge: (nodeCharge: number) => void;
   fontSize: number;
   setFontSize: (fontSize: number) => void;
-  renderer: "canvas" | "svg";
-  setRenderer: (renderer: "canvas" | "svg") => void;
+  renderer: "canvas" | "svg" | "webgl";
+  setRenderer: (renderer: "canvas" | "svg" | "webgl") => void;
 }
 
 export default function Settings({
@@ -75,23 +75,35 @@ export default function Settings({
         </FormHelperText>
       </FormControl>
 
-      <FormLabel mt={10}>Renderer</FormLabel>
-      <ButtonGroup isAttached>
-        <Button
-          isDisabled={renderer === "svg"}
-          colorScheme={renderer === "svg" ? "blue" : "gray"}
-          onClick={() => setRenderer("svg")}
-        >
-          SVG
-        </Button>
-        <Button
-          isDisabled={renderer === "canvas"}
-          colorScheme={renderer === "canvas" ? "blue" : "gray"}
-          onClick={() => setRenderer("canvas")}
-        >
-          Canvas
-        </Button>
-      </ButtonGroup>
+      <FormControl mt={10}>
+        <FormLabel>Renderer</FormLabel>
+        <ButtonGroup isAttached>
+          <Button
+            isDisabled={renderer === "svg"}
+            colorScheme={renderer === "svg" ? "blue" : "gray"}
+            onClick={() => setRenderer("svg")}
+          >
+            SVG
+          </Button>
+          <Button
+            isDisabled={renderer === "canvas"}
+            colorScheme={renderer === "canvas" ? "blue" : "gray"}
+            onClick={() => setRenderer("canvas")}
+          >
+            Canvas
+          </Button>
+          <Button
+            isDisabled={renderer === "webgl"}
+            colorScheme={renderer === "webgl" ? "blue" : "gray"}
+            onClick={() => setRenderer("webgl")}
+          >
+            WebGL
+          </Button>
+        </ButtonGroup>
+        <FormHelperText>
+          Canvas is faster than SVG. WebGL renderer is experimental.
+        </FormHelperText>
+      </FormControl>
 
       <FormControl mt={10}>
         <Flex alignItems="center">

@@ -50,7 +50,7 @@ export default function useSimulation({
   const initialDecay = simulation.alphaDecay();
 
   if (initialIterations) {
-    const decay = 1 - Math.pow(0.001, 1 / 1000);
+    const decay = 1e-3;
     simulation.alphaDecay(decay);
     stateSimulation.alphaDecay(decay);
     simulation.tick(initialIterations);

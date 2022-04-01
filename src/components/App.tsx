@@ -15,7 +15,9 @@ export default function App() {
   const [linkDistance, setLinkDistance] = useState(100);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
   const [nodeCharge, setNodeCharge] = useState(-1000);
-  const [renderer, setRenderer] = useState<"canvas" | "svg">("canvas");
+  const [renderer, setRenderer] = useState<"canvas" | "svg" | "webgl">(
+    "canvas"
+  );
 
   return (
     <Grid h="100vh" templateColumns="minmax(200px, 20vw) auto">
