@@ -1,8 +1,8 @@
-import { useRef, Fragment } from "react";
+import { Fragment, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Line2 } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Cylinder, Line, Text, OrbitControls } from "@react-three/drei";
+import { Cylinder, Line, OrbitControls, Text } from "@react-three/drei";
 import type { RendererProps } from "./Network";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
@@ -15,14 +15,12 @@ export default function WrappedWebGLRenderer(props: WebGLRendererProps) {
         near: 0.01,
         far: 1000000,
         position: [0, 0, 3000],
-        // up: [-1, 0, 1],
       }}
     >
       <ambientLight />
       <pointLight />
       <WebGLRenderer {...props} />
       <OrbitControls />
-      {/*<OrthographicCamera makeDefault />*/}
     </Canvas>
   );
 }
@@ -39,13 +37,15 @@ function WebGLRenderer({
   showNames,
   fontSize,
 }: WebGLRendererProps) {
-  const moduleIds = new Set(states.map((state) => state.moduleId));
-  const stateMaterials = new Map(
-    Array.from(moduleIds).map((moduleId) => [
-      moduleId,
-      new THREE.MeshStandardMaterial({ color: nodeFill[moduleId] }),
-    ])
-  );
+  const stateMaterials = useMemo(() => {
+    const moduleIds = new Set(states.map((state) => state.moduleId));
+    return new Map(
+      Array.from(moduleIds).map((moduleId) => [
+        moduleId,
+        new THREE.MeshStandardMaterial({ color: nodeFill[moduleId] }),
+      ])
+    );
+  }, [states, nodeFill]);
 
   return (
     <>
