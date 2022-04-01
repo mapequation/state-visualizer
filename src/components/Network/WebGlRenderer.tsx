@@ -12,8 +12,8 @@ export default function WrappedWebGLRenderer(props: WebGLRendererProps) {
   return (
     <Canvas
       camera={{
-        near: 0.01,
-        far: 1000000,
+        near: 10,
+        far: 50000,
         position: [0, 0, 3000],
       }}
     >
