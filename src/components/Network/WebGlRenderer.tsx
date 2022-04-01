@@ -2,7 +2,7 @@ import { Fragment, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Line2 } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Cylinder, Line, OrbitControls, Text } from "@react-three/drei";
+import { Cylinder, Line, MapControls, Text } from "@react-three/drei";
 import type { RendererProps } from "./Network";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
@@ -15,12 +15,13 @@ export default function WrappedWebGLRenderer(props: WebGLRendererProps) {
         near: 10,
         far: 50000,
         position: [0, 0, 3000],
+        up: [0, 0, 1],
       }}
     >
       <ambientLight />
       <pointLight />
       <WebGLRenderer {...props} />
-      <OrbitControls />
+      <MapControls />
     </Canvas>
   );
 }
