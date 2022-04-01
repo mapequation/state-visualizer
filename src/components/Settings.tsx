@@ -59,23 +59,6 @@ export default function Settings({
   return (
     <>
       <FormControl mt={10}>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="lumping" mb="0">
-            Lump states
-          </FormLabel>
-          <Switch
-            id="lumping"
-            isChecked={useLumping}
-            onChange={(event) => setUseLumping(event.target.checked)}
-          />
-        </Flex>
-        <FormHelperText>
-          Lump state nodes in the same module and physical node into one state
-          node. Improves performance.
-        </FormHelperText>
-      </FormControl>
-
-      <FormControl mt={10}>
         <FormLabel>Renderer</FormLabel>
         <ButtonGroup isAttached>
           <Button
@@ -102,6 +85,23 @@ export default function Settings({
         </ButtonGroup>
         <FormHelperText>
           Canvas is faster than SVG. WebGL renderer is experimental.
+        </FormHelperText>
+      </FormControl>
+
+      <FormControl mt={10}>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="lumping" mb="0">
+            Lump states
+          </FormLabel>
+          <Switch
+            id="lumping"
+            isChecked={useLumping}
+            onChange={(event) => setUseLumping(event.target.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          Lump state nodes in the same module and physical node into one state
+          node. Improves performance.
         </FormHelperText>
       </FormControl>
 
