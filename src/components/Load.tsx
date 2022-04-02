@@ -11,8 +11,8 @@ import {
 import { parseClu } from "@mapequation/infomap/parser";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
-import lesMiserables from "../data";
 import readFile from "../lib/read-file";
+import lesMiserables from "../data";
 import mergeStatesClu, { FlowStateNetwork } from "../lib/merge-states-clu";
 
 interface LoadProps {

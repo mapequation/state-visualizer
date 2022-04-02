@@ -17,6 +17,7 @@ import {
   Switch,
   Tooltip,
 } from "@chakra-ui/react";
+import type { Renderer } from "./Network";
 
 interface SettingsProps {
   useLumping: boolean;
@@ -31,8 +32,8 @@ interface SettingsProps {
   setNodeCharge: (nodeCharge: number) => void;
   fontSize: number;
   setFontSize: (fontSize: number) => void;
-  renderer: "canvas" | "svg" | "webgl";
-  setRenderer: (renderer: "canvas" | "svg" | "webgl") => void;
+  renderer: Renderer;
+  setRenderer: (renderer: Renderer) => void;
 }
 
 export default function Settings({

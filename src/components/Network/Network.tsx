@@ -1,14 +1,27 @@
+import { useMemo } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
+import SVGRenderer from "./SvgRenderer";
+import CanvasRenderer from "./CanvasRenderer";
+import WebGLRenderer from "./WebGlRenderer";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
 import useSimulation, { Simulation } from "../../hooks/useSimulation";
-import SVGRenderer from "./SvgRenderer";
-import CanvasRenderer from "./CanvasRenderer";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
-import { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
-import WebGLRenderer from "./WebGlRenderer";
-import { useMemo } from "react";
+import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
+
+export type Renderer = "svg" | "canvas" | "webgl";
+
+function getRenderer(renderer: Renderer) {
+  switch (renderer) {
+    case "svg":
+      return SVGRenderer;
+    case "canvas":
+      return CanvasRenderer;
+    case "webgl":
+      return WebGLRenderer;
+  }
+}
 
 export interface SharedProps {
   showNames: boolean;
@@ -22,7 +35,7 @@ export interface NetworkProps extends SharedProps {
   linkWidthRange?: number[];
   nodeCharge?: number;
   scheme?: c3.SchemeName;
-  renderer?: "svg" | "canvas" | "webgl";
+  renderer?: Renderer;
 }
 
 export interface RendererProps extends SharedProps {
@@ -85,13 +98,7 @@ export default function Network({
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   }, [nodes, states, nodeRadius]);
 
-  const Renderer = useMemo(() => {
-    return renderer === "svg"
-      ? SVGRenderer
-      : renderer === "webgl"
-      ? WebGLRenderer
-      : CanvasRenderer;
-  }, [renderer]);
+  const Renderer = useMemo(() => getRenderer(renderer), [renderer]);
 
   return (
     <Renderer
