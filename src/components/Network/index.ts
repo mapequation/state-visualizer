@@ -1,2 +1,3 @@
-export { default, isValidRenderer } from "./Network";
-export type { Renderer } from "./Network";
+export { default } from "./Network";
+export { isValidRenderer } from "./Renderer";
+export type { Renderer } from "./Renderer";

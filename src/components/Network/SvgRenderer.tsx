@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import linkRenderer from "../../lib/link-renderer";
-import type { RendererProps } from "./Network";
+import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 interface SVGRendererProps extends RendererProps {}

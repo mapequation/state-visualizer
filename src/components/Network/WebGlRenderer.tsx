@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Line2 } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Cylinder, Line, MapControls, Text } from "@react-three/drei";
-import type { RendererProps } from "./Network";
+import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 interface WebGLRendererProps extends RendererProps {}

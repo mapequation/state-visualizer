@@ -1,31 +1,11 @@
 import { useMemo } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
-import SVGRenderer from "./SvgRenderer";
-import CanvasRenderer from "./CanvasRenderer";
-import WebGLRenderer from "./WebGlRenderer";
+import { useRenderer, Renderer } from "./Renderer";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
-import useSimulation, { Simulation } from "../../hooks/useSimulation";
+import useSimulation from "../../hooks/useSimulation";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
-import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
-
-export type Renderer = "svg" | "canvas" | "webgl";
-
-export function isValidRenderer(renderer: string): renderer is Renderer {
-  return ["svg", "canvas", "webgl"].includes(renderer);
-}
-
-function getRenderer(renderer: Renderer) {
-  switch (renderer) {
-    case "svg":
-      return SVGRenderer;
-    case "canvas":
-      return CanvasRenderer;
-    case "webgl":
-      return WebGLRenderer;
-  }
-}
 
 export interface SharedProps {
   showNames: boolean;
@@ -40,17 +20,6 @@ export interface NetworkProps extends SharedProps {
   nodeCharge?: number;
   scheme?: c3.SchemeName;
   renderer?: Renderer;
-}
-
-export interface RendererProps extends SharedProps {
-  simulation: Simulation;
-  nodeFill: string[];
-  nodeStroke: string[];
-  linkWidth: (d: number) => number;
-  stateRadius: (d: number) => number;
-  nodes: NodeDatum[];
-  states: StateNodeDatum[];
-  links: LinkDatum[];
 }
 
 export default function Network({
@@ -103,7 +72,7 @@ export default function Network({
     forceCenter,
   });
 
-  const Renderer = useMemo(() => getRenderer(renderer), [renderer]);
+  const Renderer = useRenderer(renderer);
 
   return (
     <Renderer

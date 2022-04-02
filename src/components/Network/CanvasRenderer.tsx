@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import type { RendererProps } from "./Network";
+import type { RendererProps } from "./Renderer";
 
 interface CanvasRendererProps extends RendererProps {}
 
