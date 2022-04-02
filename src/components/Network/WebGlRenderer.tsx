@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Line2 } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -12,14 +12,15 @@ export default function WrappedWebGLRenderer(props: WebGLRendererProps) {
   return (
     <Canvas
       camera={{
-        near: 10,
-        far: 50000,
-        position: [0, 0, 3000],
+        near: 0.1,
+        far: 1000,
+        fov: 85,
+        position: [0, 0, 30],
         up: [0, 0, 1],
       }}
     >
       <ambientLight />
-      <pointLight />
+      <pointLight position={[10, 10, 100]} />
       <WebGLRenderer {...props} />
       <MapControls />
     </Canvas>
@@ -49,14 +50,15 @@ function WebGLRenderer({
   }, [states, nodeFill]);
 
   return (
-    <>
+    <object3D scale={0.02}>
       {nodes.map((node, i) => (
-        <Fragment key={i}>
-          {showNames && (
-            <Name node={node} r={nodeRadius} fontSize={fontSize} z={20} />
-          )}
-          <Node node={node} r={nodeRadius} />
-        </Fragment>
+        <Node
+          key={i}
+          node={node}
+          r={nodeRadius}
+          fontSize={fontSize}
+          showName={showNames}
+        />
       ))}
       {links.map((link, i) => (
         <Link
@@ -72,7 +74,7 @@ function WebGLRenderer({
         />
       ))}
       {states.map((state, i) => (
-        <Node
+        <StateNode
           key={i}
           node={state}
           z={10}
@@ -80,7 +82,7 @@ function WebGLRenderer({
           material={stateMaterials.get(state.moduleId)}
         />
       ))}
-    </>
+    </object3D>
   );
 }
 
@@ -92,9 +94,55 @@ function Node({
   node,
   z = 0,
   r,
+  fontSize,
+  showName = true,
   material = nodeMaterial,
 }: {
   node: NodeDatum | StateNodeDatum;
+  z?: number;
+  r: number;
+  fontSize: number;
+  showName?: boolean;
+  material?: THREE.Material;
+}) {
+  const ref = useRef<THREE.Mesh>();
+
+  useFrame(() => {
+    if (!ref.current) return;
+    ref.current.position.x = node.x;
+    ref.current.position.y = -node.y;
+  });
+
+  return (
+    <object3D ref={ref} position={[node.x, -node.y, z]}>
+      <Cylinder
+        rotation={[Math.PI / 2, 0, 0]}
+        args={[r, r, 10, 32, 1]}
+        material={material}
+      />
+      <Text
+        color="#555"
+        position={[0, 0, 20]}
+        strokeColor="#fff"
+        strokeWidth={0.2}
+        fontSize={fontSize * 0.7}
+        anchorX={-r * 0.7}
+        anchorY={-fontSize * 1.5}
+        visible={showName}
+      >
+        {node.name}
+      </Text>
+    </object3D>
+  );
+}
+
+function StateNode({
+  node,
+  z = 0,
+  r,
+  material = nodeMaterial,
+}: {
+  node: StateNodeDatum;
   z?: number;
   r: number;
   material?: THREE.Material;
@@ -104,52 +152,17 @@ function Node({
   useFrame(() => {
     if (!ref.current) return;
     ref.current.position.x = node.x;
-    ref.current.position.y = node.y;
+    ref.current.position.y = -node.y;
   });
 
   return (
     <Cylinder
       ref={ref}
-      position={[node.x, node.y, z]}
+      position={[node.x, -node.y, z + Math.random()]}
       rotation={[Math.PI / 2, 0, 0]}
       args={[r, r, 10, 32, 1]}
       material={material}
     />
-  );
-}
-
-function Name({
-  node,
-  z = 0,
-  r,
-  fontSize,
-}: {
-  node: NodeDatum | StateNodeDatum;
-  z?: number;
-  r: number;
-  fontSize: number;
-}) {
-  const ref = useRef<THREE.Mesh>();
-
-  useFrame(() => {
-    if (!ref.current) return;
-    ref.current.position.x = node.x;
-    ref.current.position.y = node.y;
-  });
-
-  return (
-    <Text
-      ref={ref}
-      position={[node.x, node.y, z]}
-      color="#555"
-      strokeColor="#fff"
-      strokeWidth={0.2}
-      fontSize={fontSize * 0.7}
-      anchorX={-r * 0.7}
-      anchorY={-fontSize * 1.5}
-    >
-      {node.name}
-    </Text>
   );
 }
 
@@ -171,10 +184,10 @@ function Link({
     ref.current.geometry.dispose();
     ref.current.geometry.setPositions([
       link.source.x,
-      link.source.y,
+      -link.source.y,
       z,
       link.target.x,
-      link.target.y,
+      -link.target.y,
       z,
     ]);
   });
@@ -183,8 +196,8 @@ function Link({
     <Line
       ref={ref}
       points={[
-        [link.source.x, link.source.y, z],
-        [link.target.x, link.target.y, z],
+        [link.source.x, -link.source.y, z],
+        [link.target.x, -link.target.y, z],
       ]}
       lineWidth={width}
       color={color}
