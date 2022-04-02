@@ -1,11 +1,15 @@
 import { Suspense, useMemo, useState } from "react";
 import { Box, Grid, GridItem, Heading } from "@chakra-ui/react";
-import Network, { Renderer } from "./Network";
+import Network, { isValidRenderer, Renderer } from "./Network";
 import Settings from "./Settings";
 import Load from "./Load";
 import ErrorBoundary from "../ErrorBoundary";
 import lumpStateNodes from "../lib/lump-states";
 import type { FlowStateNetwork } from "../lib/merge-states-clu";
+
+const params = Object.fromEntries(
+  new URLSearchParams(window.location.search).entries()
+);
 
 export default function App() {
   const [network, setNetwork] = useState<FlowStateNetwork>();
@@ -15,7 +19,9 @@ export default function App() {
   const [linkDistance, setLinkDistance] = useState(100);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
   const [nodeCharge, setNodeCharge] = useState(-1000);
-  const [renderer, setRenderer] = useState<Renderer>("canvas");
+  const [renderer, setRenderer] = useState<Renderer>(
+    params.mode && isValidRenderer(params.mode) ? params.mode : "canvas"
+  );
 
   const net = useMemo(() => {
     if (!network) return;
