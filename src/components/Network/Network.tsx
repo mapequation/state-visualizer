@@ -64,16 +64,6 @@ export default function Network({
 
   const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
 
-  const simulation = useSimulation({
-    nodes,
-    states,
-    links: physicalLinks,
-    nodeRadius,
-    nodeCharge,
-    linkDistance,
-    forceCenter,
-  });
-
   const fillColor = c3.colors(512, { scheme });
 
   const strokeColor = c3.colors(512, {
@@ -97,6 +87,17 @@ export default function Network({
     );
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   }, [nodes, states, nodeRadius]);
+
+  const simulation = useSimulation({
+    nodes,
+    states,
+    links: physicalLinks,
+    nodeRadius,
+    nodeCharge,
+    stateRadius,
+    linkDistance,
+    forceCenter,
+  });
 
   const Renderer = useMemo(() => getRenderer(renderer), [renderer]);
 

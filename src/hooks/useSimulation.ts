@@ -9,6 +9,7 @@ interface UseSimulationOptions {
   links: LinkDatum<NodeDatum>[];
   nodeRadius: number;
   nodeCharge: number;
+  stateRadius: (d: number) => number;
   linkDistance: number;
   initialIterations?: number;
   forceCenter?: number[];
@@ -25,6 +26,7 @@ export default function useSimulation({
   links,
   nodeRadius,
   nodeCharge,
+  stateRadius,
   linkDistance,
   initialIterations = 100,
   forceCenter = [0, 0],
@@ -39,7 +41,12 @@ export default function useSimulation({
 
     const stateSimulation = d3
       .forceSimulation(states)
-      .force("collide", d3.forceCollide(10))
+      .force(
+        "collide",
+        d3
+          .forceCollide<StateNodeDatum>(10)
+          .radius((d) => stateRadius(d.flow) + 1)
+      )
       .force(
         "radial",
         forceRadial(
@@ -69,6 +76,7 @@ export default function useSimulation({
     states,
     nodeRadius,
     nodeCharge,
+    stateRadius,
     linkDistance,
     initialIterations,
     forceCenter,
