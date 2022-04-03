@@ -90,20 +90,20 @@ const nodeMaterial = new THREE.MeshStandardMaterial({
   color: 0xfafafa,
 });
 
+const nodeGeometry = new THREE.CylinderBufferGeometry(40, 40, 10, 32, 1);
+
 function Node({
   node,
   z = 0,
   r,
   fontSize,
   showName = true,
-  material = nodeMaterial,
 }: {
   node: NodeDatum | StateNodeDatum;
   z?: number;
   r: number;
   fontSize: number;
   showName?: boolean;
-  material?: THREE.Material;
 }) {
   const ref = useRef<THREE.Mesh>();
 
@@ -115,10 +115,10 @@ function Node({
 
   return (
     <object3D ref={ref} position={[node.x, -node.y, z]}>
-      <Cylinder
+      <mesh
+        geometry={nodeGeometry}
+        material={nodeMaterial}
         rotation={[Math.PI / 2, 0, 0]}
-        args={[r, r, 10, 32, 1]}
-        material={material}
       />
       <Text
         color="#555"
