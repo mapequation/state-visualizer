@@ -29,7 +29,7 @@ export default function App() {
   }, [network, useLumping]);
 
   return (
-    <Grid h="100vh" templateColumns="minmax(200px, 20vw) auto">
+    <Grid h="100vh" templateColumns="minmax(300px, 20vw) auto">
       <GridItem
         w="100%"
         h="100%"
