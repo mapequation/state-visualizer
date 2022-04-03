@@ -1,8 +1,10 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import * as d3 from "d3";
 import * as THREE from "three";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MapControls, Text } from "@react-three/drei";
 import UnitVector from "./WebGL/UnitVector";
+import type { MapControls as MapControlsImpl } from "three-stdlib";
 import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
@@ -22,12 +24,14 @@ export default function WrappedWebGLRenderer(props: WebGLRendererProps) {
       <ambientLight />
       <pointLight position={[10, 10, 100]} />
       <WebGLRenderer {...props} />
-      <MapControls />
     </Canvas>
   );
 }
 
+const raycaster = new THREE.Raycaster();
+
 function WebGLRenderer({
+  simulation: { simulation, stateSimulation },
   nodes,
   states,
   links,
@@ -39,6 +43,52 @@ function WebGLRenderer({
   showNames,
   fontSize,
 }: WebGLRendererProps) {
+  const three = useThree();
+  const controlsRef = useRef<MapControlsImpl>(null);
+
+  useEffect(() => {
+    const currentRef = controlsRef.current;
+    if (!currentRef) return;
+    three.set({ controls: currentRef });
+  }, [controlsRef, three]);
+
+  const drag = d3
+    .drag<HTMLCanvasElement, unknown>()
+    .subject(() => {
+      raycaster.setFromCamera(three.mouse, three.camera);
+      const intersection = raycaster
+        .intersectObjects(three.scene.children)
+        .find((i) => i.object.userData?.type === "node");
+      const position = intersection?.object?.parent?.position;
+      if (!position) return;
+      return simulation.find(position.x, -position.y, 50);
+    })
+    .on("start", (event) => {
+      if (!event.subject) return;
+      // @ts-ignore
+      three.controls.enabled = false;
+      simulation.alphaTarget(0.3).restart();
+      stateSimulation.alphaTarget(0.8).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+    })
+    .on("drag", (event) => {
+      if (!event.subject) return;
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    })
+    .on("end", (event) => {
+      if (!event.subject) return;
+      // @ts-ignore
+      three.controls.enabled = true;
+      simulation.alphaTarget(0);
+      stateSimulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+    });
+
+  d3.select(three.gl.domElement).call(drag);
+
   const stateMaterials = useMemo(() => {
     const moduleIds = new Set(states.map((state) => state.moduleId));
     return new Map(
@@ -50,39 +100,43 @@ function WebGLRenderer({
   }, [states, nodeFill]);
 
   return (
-    <object3D scale={0.02}>
-      {nodes.map((node, i) => (
-        <Node
-          key={i}
-          node={node}
-          r={nodeRadius}
-          fontSize={fontSize}
-          showName={showNames}
-        />
-      ))}
-      {links.map((link, i) => (
-        <Link
-          key={i}
-          link={link}
-          z={10}
-          width={linkWidth(link.weight)}
-          color={
-            link.source.moduleId === link.target.moduleId
-              ? nodeStroke[link.source.moduleId]
-              : "#333"
-          }
-        />
-      ))}
-      {states.map((state, i) => (
-        <StateNode
-          key={i}
-          node={state}
-          z={10}
-          r={stateRadius(state.flow)}
-          material={stateMaterials.get(state.moduleId)}
-        />
-      ))}
-    </object3D>
+    <>
+      <MapControls ref={controlsRef} />
+
+      <object3D scale={0.02}>
+        {nodes.map((node, i) => (
+          <Node
+            key={i}
+            node={node}
+            r={nodeRadius}
+            fontSize={fontSize}
+            showName={showNames}
+          />
+        ))}
+        {links.map((link, i) => (
+          <Link
+            key={i}
+            link={link}
+            z={10}
+            width={linkWidth(link.weight)}
+            color={
+              link.source.moduleId === link.target.moduleId
+                ? nodeStroke[link.source.moduleId]
+                : "#333"
+            }
+          />
+        ))}
+        {states.map((state, i) => (
+          <StateNode
+            key={i}
+            node={state}
+            z={10}
+            r={stateRadius(state.flow)}
+            material={stateMaterials.get(state.moduleId)}
+          />
+        ))}
+      </object3D>
+    </>
   );
 }
 
@@ -116,7 +170,12 @@ function Node({
 
   return (
     <object3D ref={ref} position={[node.x, -node.y, z]}>
-      <mesh geometry={nodeGeometry} material={nodeMaterial} scale={[r, r, 1]} />
+      <mesh
+        geometry={nodeGeometry}
+        material={nodeMaterial}
+        scale={[r, r, 1]}
+        userData={{ type: "node" }}
+      />
       <Text
         color="#555"
         position={[0, 0, 20]}
