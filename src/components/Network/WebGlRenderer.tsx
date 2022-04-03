@@ -117,7 +117,7 @@ function WebGLRenderer({
           <Link
             key={i}
             link={link}
-            z={10}
+            z={15}
             width={linkWidth(link.weight)}
             color={
               link.source.moduleId === link.target.moduleId
@@ -130,7 +130,7 @@ function WebGLRenderer({
           <StateNode
             key={i}
             node={state}
-            z={10}
+            z={15}
             r={stateRadius(state.flow)}
             material={stateMaterials.get(state.moduleId)}
           />
@@ -178,7 +178,7 @@ function Node({
       />
       <Text
         color="#555"
-        position={[0, 0, 20]}
+        position={[0, 0, 22]}
         strokeColor="#fff"
         strokeWidth={0.2}
         fontSize={fontSize * 0.7}
@@ -216,7 +216,7 @@ function StateNode({
       ref={ref}
       geometry={nodeGeometry}
       material={material}
-      position={[node.x, -node.y, z + Math.random()]}
+      position={[node.x, -node.y, z]}
       scale={[r, r, 1]}
     />
   );
