@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Cylinder, MapControls, Text } from "@react-three/drei";
+import { MapControls, Text } from "@react-three/drei";
 import UnitVector from "./WebGL/UnitVector";
 import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
@@ -90,7 +90,8 @@ const nodeMaterial = new THREE.MeshStandardMaterial({
   color: 0xfafafa,
 });
 
-const nodeGeometry = new THREE.CylinderBufferGeometry(40, 40, 10, 32, 1);
+const nodeGeometry = new THREE.CylinderBufferGeometry(1, 1, 10, 20, 1);
+nodeGeometry.rotateX(Math.PI / 2);
 
 function Node({
   node,
@@ -115,11 +116,7 @@ function Node({
 
   return (
     <object3D ref={ref} position={[node.x, -node.y, z]}>
-      <mesh
-        geometry={nodeGeometry}
-        material={nodeMaterial}
-        rotation={[Math.PI / 2, 0, 0]}
-      />
+      <mesh geometry={nodeGeometry} material={nodeMaterial} scale={[r, r, 1]} />
       <Text
         color="#555"
         position={[0, 0, 20]}
@@ -156,12 +153,12 @@ function StateNode({
   });
 
   return (
-    <Cylinder
+    <mesh
       ref={ref}
-      position={[node.x, -node.y, z + Math.random()]}
-      rotation={[Math.PI / 2, 0, 0]}
-      args={[r, r, 10, 32, 1]}
+      geometry={nodeGeometry}
       material={material}
+      position={[node.x, -node.y, z + Math.random()]}
+      scale={[r, r, 1]}
     />
   );
 }
@@ -211,7 +208,7 @@ function getLinkTransform(link: LinkDatum) {
   const dx = x2 - x1;
   const dy = y2 - y1;
   const l = Math.sqrt(dx * dx + dy * dy);
-  const theta = Math.atan2(dy, dx || 1e-6);
+  const theta = Math.atan2(dy, dx);
   const rotateZ = (3 * Math.PI) / 2 - theta;
 
   return {
