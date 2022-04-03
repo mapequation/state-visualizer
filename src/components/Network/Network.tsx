@@ -5,6 +5,7 @@ import { useRenderer, Renderer } from "./Renderer";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
 import useSimulation from "../../hooks/useSimulation";
+import { clamp } from "../../lib/utils";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 
 export interface SharedProps {
@@ -54,9 +55,11 @@ export default function Network({
     const maxStateFlow = Math.max(...states.map((state) => state.flow));
     const maxNumStates = Math.max(...nodes.map((node) => node.states.length));
     const dist = nodeRadius / 2;
-    const maxRadius = Math.min(
-      nodeRadius,
-      Math.max((dist * Math.PI) / maxNumStates, 15)
+    const minRadius = 15;
+    const maxRadius = clamp(
+      (dist * Math.PI) / maxNumStates,
+      minRadius,
+      nodeRadius
     );
     return d3.scaleSqrt().domain([0, maxStateFlow]).range([2, maxRadius]);
   }, [nodes, states, nodeRadius]);

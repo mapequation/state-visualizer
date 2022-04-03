@@ -7236,4 +7236,6 @@ const clu = `# v2.2.0
 47151 10 0.00146566 47
 `;
 
-export default { net, clu };
+const lesMiserables = { net, clu };
+
+export default lesMiserables;
