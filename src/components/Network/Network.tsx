@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
-import { useRenderer, Renderer } from "./Renderer";
+import { Renderer, useRenderer } from "./Renderer";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
 import useSimulation from "../../hooks/useSimulation";

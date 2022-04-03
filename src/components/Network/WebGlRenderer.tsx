@@ -1,8 +1,8 @@
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { Line2 } from "three-stdlib";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Cylinder, Line, MapControls, Text } from "@react-three/drei";
+import { Cylinder, MapControls, Text } from "@react-three/drei";
+import UnitVector from "./WebGL/UnitVector";
 import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
@@ -65,7 +65,7 @@ function WebGLRenderer({
           key={i}
           link={link}
           z={10}
-          width={linkWidth(link.weight) / 3}
+          width={linkWidth(link.weight)}
           color={
             link.source.moduleId === link.target.moduleId
               ? nodeStroke[link.source.moduleId]
@@ -177,31 +177,47 @@ function Link({
   color: string;
   width: number;
 }) {
-  const ref = useRef<Line2>(null);
+  const ref = useRef<THREE.Object3D>(null);
+  const { posX, posY, scaleY, rotateZ } = getLinkTransform(link);
 
   useFrame(() => {
     if (!ref.current) return;
-    ref.current.geometry.dispose();
-    ref.current.geometry.setPositions([
-      link.source.x,
-      -link.source.y,
-      z,
-      link.target.x,
-      -link.target.y,
-      z,
-    ]);
+
+    const { posX, posY, scaleY, rotateZ } = getLinkTransform(link);
+
+    ref.current.position.x = posX;
+    ref.current.position.y = -posY;
+    ref.current.scale.y = scaleY;
+    ref.current.rotation.z = rotateZ;
   });
 
   return (
-    <Line
+    <object3D
       ref={ref}
-      points={[
-        [link.source.x, -link.source.y, z],
-        [link.target.x, -link.target.y, z],
-      ]}
-      lineWidth={width}
-      color={color}
-      alphaWrite={false}
-    />
+      position={[posX, -posY, z]}
+      scale={[1, scaleY, 1]}
+      rotation={[0, 0, rotateZ]}
+    >
+      <UnitVector lineWidth={width / 3} color={color} />
+    </object3D>
   );
+}
+
+function getLinkTransform(link: LinkDatum) {
+  const x1 = link.source.x;
+  const y1 = link.source.y;
+  const x2 = link.target.x;
+  const y2 = link.target.y;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const l = Math.sqrt(dx * dx + dy * dy);
+  const theta = Math.atan2(dy, dx || 1e-6);
+  const rotateZ = (3 * Math.PI) / 2 - theta;
+
+  return {
+    posX: x1,
+    posY: y1,
+    scaleY: l,
+    rotateZ,
+  };
 }
