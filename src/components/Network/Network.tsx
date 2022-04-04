@@ -36,6 +36,9 @@ export default function Network({
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
 
+  // Sort links by weight to improve rendering performance.
+  links.sort((a, b) => b.weight - a.weight);
+
   const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
 
   const fillColor = c3.colors(512, { scheme });

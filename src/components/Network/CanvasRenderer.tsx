@@ -18,7 +18,11 @@ export default function CanvasRenderer({
   fontSize,
 }: CanvasRendererProps) {
   const render = (ctx: CanvasRenderingContext2D) => {
-    function draw(transform: any) {
+    const minFps = 30;
+    const timeBudget = 1000 / minFps; // ms
+
+    function draw(transform: any, budgeted: boolean = true) {
+      const start = performance.now();
       ctx.save();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.translate(transform.x, transform.y);
@@ -27,17 +31,18 @@ export default function CanvasRenderer({
       ctx.fillStyle = "#fafafa";
       ctx.strokeStyle = "#333";
       ctx.lineWidth = 2;
+      ctx.beginPath();
       for (const node of nodes) {
-        ctx.beginPath();
         ctx.moveTo(node.x + nodeRadius, node.y);
         ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
       }
+      ctx.fill();
+      ctx.stroke();
 
       for (const link of links) {
         const lineWidth = linkWidth(link.weight);
-        if (currentTransform.k * lineWidth < 0.02) continue;
+        // Assume links are sorted by weight.
+        if (currentTransform.k * lineWidth < 0.02) break;
 
         ctx.beginPath();
         ctx.moveTo(link.source.x, link.source.y);
@@ -48,6 +53,8 @@ export default function CanvasRenderer({
             ? nodeStroke[link.source.moduleId]
             : "#333";
         ctx.stroke();
+
+        if (budgeted && performance.now() - start > timeBudget) break;
       }
 
       ctx.lineWidth = 2;
@@ -121,7 +128,9 @@ export default function CanvasRenderer({
       .call(zoom)
       .call(zoom.transform, currentTransform);
 
-    simulation.on("tick", () => draw(currentTransform));
+    simulation
+      .on("tick", () => draw(currentTransform))
+      .on("end", () => draw(currentTransform, false));
   };
 
   return <Canvas render={render} />;
