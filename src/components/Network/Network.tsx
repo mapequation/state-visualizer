@@ -47,13 +47,13 @@ export default function Network({
   });
 
   const linkWidth = useMemo(() => {
-    const maxLinkWeight = Math.max(...links.map((link) => link.weight));
-    return d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
+    const maxWeight = d3.max(links, (d) => d.weight) as number;
+    return d3.scaleLinear().domain([0, maxWeight]).range(linkWidthRange);
   }, [links, linkWidthRange]);
 
   const stateRadius = useMemo(() => {
-    const maxStateFlow = Math.max(...states.map((state) => state.flow));
-    const maxNumStates = Math.max(...nodes.map((node) => node.states.length));
+    const maxStateFlow = d3.max(states, (d) => d.flow) as number;
+    const maxNumStates = d3.max(nodes, (d) => d.states.length) as number;
     const dist = nodeRadius / 2;
     const minRadius = 15;
     const maxRadius = clamp(
