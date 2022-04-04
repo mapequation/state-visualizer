@@ -8,8 +8,12 @@ import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 export type Renderer = "svg" | "canvas" | "webgl";
 
-export function isValidRenderer(renderer: string): renderer is Renderer {
-  return ["svg", "canvas", "webgl"].includes(renderer);
+export function isValidRenderer(
+  renderer: string | undefined
+): renderer is Renderer {
+  return (
+    renderer !== undefined && ["svg", "canvas", "webgl"].includes(renderer)
+  );
 }
 
 export function useRenderer(renderer: Renderer) {

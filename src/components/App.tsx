@@ -20,7 +20,7 @@ export default function App() {
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
   const [nodeCharge, setNodeCharge] = useState(-600);
   const [renderer, setRenderer] = useState<Renderer>(
-    params.mode && isValidRenderer(params.mode) ? params.mode : "canvas"
+    isValidRenderer(params.mode) ? params.mode : "canvas"
   );
 
   const net = useMemo(() => {
