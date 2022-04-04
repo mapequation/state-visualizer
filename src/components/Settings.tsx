@@ -128,6 +128,7 @@ export default function Settings({
         onChangeEnd={(v) => setFontSize(v)}
         onMouseEnter={() => setShowFontSizeTooltip(true)}
         onMouseLeave={() => setShowFontSizeTooltip(false)}
+        isDisabled={!showNames}
       >
         <SliderTrack>
           <SliderFilledTrack />
