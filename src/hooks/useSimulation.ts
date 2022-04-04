@@ -50,7 +50,7 @@ export default function useSimulation({
       .force(
         "radial",
         forceRadial(
-          nodeRadius / 2,
+          0,
           (d: StateNodeDatum) => d.physicalNode.x,
           (d: StateNodeDatum) => d.physicalNode.y
         ).strength(1)
