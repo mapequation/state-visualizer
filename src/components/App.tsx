@@ -65,8 +65,8 @@ export default function App() {
             number of states, but the raw states can still be explored.
           </Text>
           <Text mt={2}>
-            Expect trouble if your input networks are too large (more than
-            several hundreds of physical nodes).
+            Expect trouble if your input networks are too large (thousands of
+            physical nodes).
           </Text>
         </section>
 
