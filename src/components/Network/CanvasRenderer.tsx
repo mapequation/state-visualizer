@@ -41,7 +41,12 @@ export default function CanvasRenderer({
       for (const link of links) {
         const lineWidth = linkWidth(link.weight);
         // Assume links are sorted by weight.
-        if (currentTransform.k * lineWidth < 0.01) break;
+        if (
+          currentTransform.k * lineWidth < 0.01 ||
+          performance.now() - start > timeBudgetMs
+        ) {
+          break;
+        }
 
         ctx.beginPath();
         ctx.moveTo(link.source.x, link.source.y);
@@ -52,8 +57,6 @@ export default function CanvasRenderer({
             ? nodeStroke[link.source.moduleId]
             : "#333";
         ctx.stroke();
-
-        if (performance.now() - start > timeBudgetMs) break;
       }
 
       ctx.lineWidth = 2;
@@ -95,10 +98,7 @@ export default function CanvasRenderer({
         currentTransform = e.transform;
         draw(currentTransform);
       })
-      .on("end", () => {
-        console.log("zoom end");
-        draw(currentTransform, Infinity);
-      });
+      .on("end", () => draw(currentTransform, Infinity));
 
     const drag = d3
       .drag<HTMLCanvasElement, unknown>()
@@ -166,6 +166,8 @@ function Canvas({ render }: CanvasProps) {
     if (!context) return;
 
     render(context);
+
+    return () => window.removeEventListener("resize", resize);
   }, [ref, render]);
 
   return (
