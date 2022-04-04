@@ -20,7 +20,7 @@ export default function CanvasRenderer({
   const render = (ctx: CanvasRenderingContext2D) => {
     const minFps = 60;
 
-    function draw(transform: any, timeBudgetMs = 1000 / minFps) {
+    function draw(transform: d3.ZoomTransform, timeBudgetMs = 1000 / minFps) {
       const start = performance.now();
       ctx.save();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -94,6 +94,10 @@ export default function CanvasRenderer({
       .on("zoom", (e) => {
         currentTransform = e.transform;
         draw(currentTransform);
+      })
+      .on("end", () => {
+        console.log("zoom end");
+        draw(currentTransform, Infinity);
       });
 
     const drag = d3

@@ -96,6 +96,12 @@ export default function useSimulation({
     simulation.alphaDecay(initialDecay);
     stateSimulation.alphaDecay(initialDecay);
 
+    if (nodes.length > 1000) {
+      simulation.stop();
+      stateSimulation.tick(initialIterations);
+      stateSimulation.stop();
+    }
+
     console.timeEnd("simulation");
     return { simulation, stateSimulation };
   }, [
