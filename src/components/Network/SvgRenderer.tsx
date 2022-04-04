@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import linkRenderer from "../../lib/link-renderer";
 import type { RendererProps } from "./Renderer";
-import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
+import type { LinkDatum, NodeDatum } from "../../types/datum";
 
 interface SVGRendererProps extends RendererProps {}
 
@@ -39,77 +39,31 @@ export default function SVGRenderer({
 
     svg.call(zoom).on("dblclick.zoom", null);
 
-    const dragHelper = {
-      start: (d: NodeDatum | StateNodeDatum) => {
+    const drag = d3
+      .drag<SVGCircleElement, NodeDatum>()
+      .on("start", function (event, d) {
+        simulation.alphaTarget(0.3).restart();
+        stateSimulation.alphaTarget(0.8).restart();
         d.fx = d.x;
         d.fy = d.y;
-      },
-      drag: (
-        d: NodeDatum | StateNodeDatum,
-        event: { dx: number; dy: number }
-      ) => {
-        if (d.fx === undefined || d.fy === undefined) {
-          d.fx = d.x;
-          d.fy = d.y;
-        }
+      })
+      .on("drag", function (event, d) {
         d.fx += event.dx;
         d.fy += event.dy;
-      },
-      stop: (d: NodeDatum | StateNodeDatum) => {
+      })
+      .on("end", function (event, d) {
+        simulation.alphaTarget(0);
+        stateSimulation.alphaTarget(0);
         d.fx = undefined;
         d.fy = undefined;
-      },
-      setAlphaTarget: (
-        event: { active: boolean },
-        alphaTarget = 0,
-        stateAlphaTarget = 0
-      ) => {
-        if (!event.active) {
-          simulation.alphaTarget(alphaTarget).restart();
-          stateSimulation.alphaTarget(stateAlphaTarget).restart();
-        }
-      },
-    };
+      });
 
     const node = svg
-      .selectAll(".node")
+      .selectAll<SVGCircleElement, unknown>(".node")
       .data(nodes)
-      .call(
-        // @ts-ignore
-        d3
-          .drag<SVGCircleElement, NodeDatum>()
-          .on("start", function (event, d) {
-            dragHelper.setAlphaTarget(event, 0.3, 0.8);
-            dragHelper.start(d);
-          })
-          .on("drag", function (event, d) {
-            dragHelper.drag(d, event);
-          })
-          .on("end", function (event, d) {
-            dragHelper.setAlphaTarget(event);
-            dragHelper.stop(d);
-          })
-      );
+      .call(drag);
 
-    const state = svg
-      .selectAll(".state")
-      .data(states)
-      .call(
-        // @ts-ignore
-        d3
-          .drag<SVGCircleElement, StateNodeDatum>()
-          .on("start", function (event, d) {
-            dragHelper.setAlphaTarget(event, 0.01, 0.5);
-            dragHelper.start(d);
-          })
-          .on("drag", function (event, d) {
-            dragHelper.drag(d, event);
-          })
-          .on("end", function (event, d) {
-            dragHelper.setAlphaTarget(event);
-            dragHelper.stop(d);
-          })
-      );
+    const state = svg.selectAll(".state").data(states);
 
     const link = svg.selectAll(".link").data(links);
     const name = svg.selectAll(".name").data(nodes);
@@ -119,7 +73,6 @@ export default function SVGRenderer({
     simulation.on("tick", () => {
       link.each(function (d: LinkDatum) {
         const { x1, y1, x2, y2 } = drawLink(d);
-        // @ts-ignore
         d3.select(this)
           .attr("x1", x1)
           .attr("y1", y1)

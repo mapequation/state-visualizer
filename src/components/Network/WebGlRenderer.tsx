@@ -65,8 +65,8 @@ function WebGLRenderer({
     })
     .on("start", (event) => {
       if (!event.subject) return;
-      // @ts-ignore
-      three.controls.enabled = false;
+      const controls = three.controls as MapControlsImpl;
+      controls.enabled = false;
       simulation.alphaTarget(0.3).restart();
       stateSimulation.alphaTarget(0.8).restart();
       event.subject.fx = event.subject.x;
@@ -79,8 +79,8 @@ function WebGLRenderer({
     })
     .on("end", (event) => {
       if (!event.subject) return;
-      // @ts-ignore
-      three.controls.enabled = true;
+      const controls = three.controls as MapControlsImpl;
+      controls.enabled = true;
       simulation.alphaTarget(0);
       stateSimulation.alphaTarget(0);
       event.subject.fx = null;
