@@ -18,10 +18,9 @@ export default function CanvasRenderer({
   fontSize,
 }: CanvasRendererProps) {
   const render = (ctx: CanvasRenderingContext2D) => {
-    const minFps = 30;
-    const timeBudget = 1000 / minFps; // ms
+    const minFps = 60;
 
-    function draw(transform: any, budgeted: boolean = true) {
+    function draw(transform: any, timeBudgetMs = 1000 / minFps) {
       const start = performance.now();
       ctx.save();
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -42,7 +41,7 @@ export default function CanvasRenderer({
       for (const link of links) {
         const lineWidth = linkWidth(link.weight);
         // Assume links are sorted by weight.
-        if (currentTransform.k * lineWidth < 0.02) break;
+        if (currentTransform.k * lineWidth < 0.01) break;
 
         ctx.beginPath();
         ctx.moveTo(link.source.x, link.source.y);
@@ -54,7 +53,7 @@ export default function CanvasRenderer({
             : "#333";
         ctx.stroke();
 
-        if (budgeted && performance.now() - start > timeBudget) break;
+        if (performance.now() - start > timeBudgetMs) break;
       }
 
       ctx.lineWidth = 2;
@@ -130,7 +129,10 @@ export default function CanvasRenderer({
 
     simulation
       .on("tick", () => draw(currentTransform))
-      .on("end", () => draw(currentTransform, false));
+      .on("end", () => {
+        console.log("simulation ended");
+        draw(currentTransform, Infinity);
+      });
   };
 
   return <Canvas render={render} />;
