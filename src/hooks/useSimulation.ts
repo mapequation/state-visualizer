@@ -32,12 +32,38 @@ export default function useSimulation({
   forceCenter = [0, 0],
 }: UseSimulationOptions): Simulation {
   return useMemo(() => {
+    const forceLink = (() => {
+      const [minWeight, maxWeight] = d3.extent(
+        links,
+        (d) => d.weight
+      ) as number[];
+
+      const distance = d3
+        .scaleLinear()
+        .domain([minWeight, maxWeight])
+        .range([linkDistance, 10]);
+
+      const strength = d3
+        .scaleLinear()
+        .domain([minWeight, maxWeight])
+        .range([0.5, 1]);
+
+      const force = d3.forceLink(links);
+      const defaultStrength = force.strength();
+
+      force
+        .strength((d, i, n) => defaultStrength(d, i, n) * strength(d.weight))
+        .distance((d) => distance(d.weight));
+
+      return force;
+    })();
+
     const simulation = d3
       .forceSimulation(nodes)
       .force("center", d3.forceCenter(forceCenter[0], forceCenter[1]))
       .force("collide", d3.forceCollide(2 * nodeRadius))
       .force("charge", d3.forceManyBody().strength(nodeCharge))
-      .force("link", d3.forceLink(links).distance(linkDistance));
+      .force("link", forceLink);
 
     const stateSimulation = d3
       .forceSimulation(states)
