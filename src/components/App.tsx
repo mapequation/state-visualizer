@@ -18,7 +18,7 @@ export default function App() {
   const [fontSize, setFontSize] = useState(40);
   const [linkDistance, setLinkDistance] = useState(100);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
-  const [nodeCharge, setNodeCharge] = useState(-1000);
+  const [nodeCharge, setNodeCharge] = useState(-600);
   const [renderer, setRenderer] = useState<Renderer>(
     params.mode && isValidRenderer(params.mode) ? params.mode : "canvas"
   );
