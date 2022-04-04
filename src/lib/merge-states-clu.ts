@@ -31,7 +31,9 @@ export default function mergeStatesClu(
   const clusterByStateId = new Map<number, CluStateNode>();
 
   clusters.nodes.forEach((state) => {
-    clusterByStateId.set(state.stateId, state);
+    // We should only use state ids.
+    // For first-order networks with state output, the state id is the same as the node id.
+    clusterByStateId.set(state.stateId ?? state.id, state);
   });
 
   const states: FlowStateNode[] = [];

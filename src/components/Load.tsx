@@ -81,7 +81,7 @@ export default function Load({
         accept=".net,.clu"
         onChange={handleChange}
       />
-      <Button as="label" htmlFor="file-upload" colorScheme="blue">
+      <Button as="label" htmlFor="file-upload" colorScheme="blue" size="sm">
         Load files
       </Button>
       <FormHelperText>

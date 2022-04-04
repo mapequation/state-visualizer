@@ -1,5 +1,13 @@
 import { Suspense, useMemo, useState } from "react";
-import { Box, Grid, GridItem, Heading } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  GridItem,
+  Heading,
+  ListItem,
+  Text,
+  UnorderedList,
+} from "@chakra-ui/react";
 import Network, { isValidRenderer, Renderer } from "./Network";
 import Settings from "./Settings";
 import Load from "./Load";
@@ -45,6 +53,23 @@ export default function App() {
           State Network Visualizer
         </Heading>
 
+        <section>
+          <Text mt={4}>
+            State networks can describe higher-order constr&shy;aints, such as
+            memory or multi&shy;layer networks. Because of the high
+            dimension&shy;ality of state networks, they are difficult to
+            visualize.
+          </Text>
+          <Text mt={2}>
+            This tool visualizes state networks by lumping states into a smaller
+            number of states, but the raw states can still be explored.
+          </Text>
+          <Text mt={2}>
+            Expect trouble if your input networks are too large (more than
+            several hundreds of physical nodes).
+          </Text>
+        </section>
+
         <Load setNetwork={setNetwork} />
 
         <Settings
@@ -64,12 +89,41 @@ export default function App() {
           setRenderer={setRenderer}
         />
 
-        <Box fontSize="sm" color="gray.500" mt={50}>
-          By <a href="//antoneriksson.io">Anton Eriksson</a>
-          <br />
-          <a href="//mapequation.org">mapequation.org</a>
-          <br />
-          <a href="//github.com/mapequation/state-visualizer">Source</a>
+        <Box as="nav" fontSize="sm" color="gray.500" my={10}>
+          <UnorderedList styleType="none" spacing={3}>
+            <ListItem>
+              By <a href="//antoneriksson.io">Anton Eriksson</a> (
+              <a href="//github.com/mapequation/state-visualizer">
+                source code
+              </a>
+              )
+            </ListItem>
+            <ListItem>
+              <cite>
+                <a href="https://www-cs-faculty.stanford.edu/~knuth/sgb.html">
+                  Les Misérables
+                </a>
+              </cite>{" "}
+              example data from{" "}
+              <a href="//networks.skewed.de/">Netzschleuder</a>
+            </ListItem>
+            <ListItem>
+              <a href="//mapequation.org">
+                <img
+                  src="//www.mapequation.org/assets/img/twocolormapicon_whiteboarder.svg"
+                  width="20"
+                  height="20"
+                  alt=""
+                  style={{
+                    display: "inline-block",
+                    marginBottom: "-3px",
+                    marginRight: "5px",
+                  }}
+                />{" "}
+                mapequation.org
+              </a>
+            </ListItem>
+          </UnorderedList>
         </Box>
       </GridItem>
 
