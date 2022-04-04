@@ -96,7 +96,7 @@ export default function SVGRenderer({
       height="100%"
       viewBox="0 0 4000 4000"
     >
-      <defs>
+      {/*<defs>
         <marker
           id="arrow"
           markerHeight={5}
@@ -107,7 +107,7 @@ export default function SVGRenderer({
         >
           <path d="M 0,0 m -5,-5 L 5,0 L -5,5 Z" fill="#333" />
         </marker>
-      </defs>
+      </defs>*/}
       <g id="zoomable">
         <g className="nodes">
           {nodes.map((node) => (
@@ -135,7 +135,7 @@ export default function SVGRenderer({
               strokeWidth={linkWidth(link.weight)}
               stroke="#333"
               opacity={0.8}
-              markerEnd="url(#arrow)"
+              // markerEnd="url(#arrow)"
             />
           ))}
         </g>
