@@ -127,7 +127,7 @@ export default function App() {
         </Box>
       </GridItem>
 
-      <GridItem w="100%" overflow="hidden">
+      <GridItem w="100%" overflow="hidden" bg="#fff">
         <Suspense fallback={null}>
           <ErrorBoundary>
             {net != null && (
