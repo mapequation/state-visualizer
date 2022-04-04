@@ -25,7 +25,10 @@ export default function App() {
 
   const net = useMemo(() => {
     if (!network) return;
-    return useLumping ? lumpStateNodes(network) : network;
+    console.time("lump");
+    const net = useLumping ? lumpStateNodes(network) : network;
+    console.timeEnd("lump");
+    return net;
   }, [network, useLumping]);
 
   return (
@@ -73,7 +76,7 @@ export default function App() {
       <GridItem w="100%" overflow="hidden">
         <Suspense fallback={null}>
           <ErrorBoundary>
-            {net && (
+            {net != null && (
               <Network
                 network={net}
                 fontSize={fontSize}

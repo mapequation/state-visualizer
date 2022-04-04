@@ -32,6 +32,7 @@ export default function useSimulation({
   forceCenter = [0, 0],
 }: UseSimulationOptions): Simulation {
   return useMemo(() => {
+    console.time("simulation");
     const forceLink = (() => {
       const [minWeight, maxWeight] = d3.extent(
         links,
@@ -95,6 +96,7 @@ export default function useSimulation({
     simulation.alphaDecay(initialDecay);
     stateSimulation.alphaDecay(initialDecay);
 
+    console.timeEnd("simulation");
     return { simulation, stateSimulation };
   }, [
     nodes,

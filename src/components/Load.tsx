@@ -32,7 +32,9 @@ export default function Load({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.time("merge");
     setNetwork(mergeStatesClu(net, clu));
+    console.timeEnd("merge");
   }, [net, clu, setNetwork]);
 
   const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +56,7 @@ export default function Load({
 
   const readFiles = async (netFile: File, cluFile: File) => {
     try {
+      console.time("readFiles");
       const [net, clu] = await Promise.all([
         readFile(netFile),
         readFile(cluFile),
@@ -61,6 +64,7 @@ export default function Load({
       setFiles([netFile, cluFile]);
       setNet(parseStates(net));
       setClu(parseClu<CluStateNode>(clu));
+      console.timeEnd("readFiles");
     } catch (e: any) {
       setError(e?.message);
       return;
