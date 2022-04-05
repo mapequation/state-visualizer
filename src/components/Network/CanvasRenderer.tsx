@@ -57,7 +57,9 @@ export default function CanvasRenderer({
       });
 
     d3.select(ctx.canvas)
-      .call(drag)
+      .call(
+        opts.nodes.length < 2000 ? drag : () => console.log("drag disabled")
+      )
       .call(zoom)
       .call(zoom.transform, currentTransform);
 
