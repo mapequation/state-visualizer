@@ -1,6 +1,6 @@
 import * as d3 from "d3";
-import { LinkDatum, NodeDatum, StateNodeDatum } from "../types/datum";
-import { forceRadial } from "../lib/d3-force";
+import { forceRadial } from "./force-radial";
+import type { LinkDatum, NodeDatum, StateNodeDatum } from "../types/datum";
 
 export interface SimulationOptions {
   nodes: NodeDatum[];
