@@ -126,8 +126,7 @@ export default function Settings({
         </Flex>
         <FormHelperText>
           Control if links whose source and target modules differ should be
-          drawn or not. Regardless, they take part in the simulation. Defaults
-          to off for large networks.
+          drawn or not. Regardless, they take part in the simulation.
         </FormHelperText>
       </FormControl>
 
@@ -148,7 +147,7 @@ export default function Settings({
         <Slider
           defaultValue={fontSize}
           min={15}
-          max={50}
+          max={100}
           onChangeEnd={(v) => setFontSize(v)}
           onMouseEnter={() => setShowFontSizeTooltip(true)}
           onMouseLeave={() => setShowFontSizeTooltip(false)}

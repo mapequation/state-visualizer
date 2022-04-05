@@ -57,11 +57,13 @@ export default function CanvasRenderer({
       });
 
     d3.select(ctx.canvas)
-      .call(
-        opts.nodes.length < 2000 ? drag : () => console.log("drag disabled")
-      )
+      .call(drag)
       .call(zoom)
       .call(zoom.transform, currentTransform);
+
+    if (opts.nodes.length > 2000) {
+      d3.select(ctx.canvas).on("mousedown.drag", null);
+    }
 
     simulation
       .on("tick", () =>

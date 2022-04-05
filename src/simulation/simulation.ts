@@ -59,7 +59,7 @@ export function createSimulation({
     .forceSimulation(states)
     .force(
       "collide",
-      d3.forceCollide<StateNodeDatum>(10).radius((d) => stateRadius(d.flow) + 1)
+      d3.forceCollide<StateNodeDatum>(10).radius((d) => stateRadius(d.flow))
     )
     .force(
       "radial",

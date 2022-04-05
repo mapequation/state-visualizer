@@ -37,9 +37,6 @@ export default function App() {
     if (!network) return;
     console.time("lump");
     const net = useLumping ? lumpStateNodes(network) : network;
-    if (net.nodes.length > 1000) {
-      setInterModuleLinks(false);
-    }
     console.timeEnd("lump");
     return net;
   }, [network, useLumping]);

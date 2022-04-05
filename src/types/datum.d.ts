@@ -7,6 +7,7 @@ export type NodeDatum = FlowNode &
     x: number;
     y: number;
     fontSize?: number;
+    radius?: number;
   };
 
 export type StateNodeDatum = FlowStateNode &

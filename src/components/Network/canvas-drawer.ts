@@ -3,8 +3,6 @@ import type { CanvasRendererProps } from "./CanvasRenderer";
 
 type MakeDrawerOptions = {
   ctx: CanvasRenderingContext2D;
-  minFps?: number;
-  minVisibleLinkWidth?: number;
 } & Omit<CanvasRendererProps, "simulation" | "interModuleLinks">;
 
 type DrawerOptions = {
@@ -17,11 +15,12 @@ export default function makeDrawer({
   nodes,
   states,
   links,
-  nodeRadius,
   showNames,
-  minFps = 60,
-  minVisibleLinkWidth = 0.01,
 }: MakeDrawerOptions) {
+  const minFps = 60;
+  const minVisibleLinkWidth = 0.005;
+  const minVisibleFontSize = 6;
+
   return (
     transform: d3.ZoomTransform,
     {
@@ -30,21 +29,10 @@ export default function makeDrawer({
     }: DrawerOptions = {}
   ) => {
     const start = performance.now();
-    ctx.save();
+    ctx.resetTransform();
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.translate(transform.x, transform.y);
     ctx.scale(transform.k, transform.k);
-
-    ctx.fillStyle = "#fafafa";
-    ctx.strokeStyle = "#333";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for (const node of nodes) {
-      ctx.moveTo(node.x + nodeRadius, node.y);
-      ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI);
-    }
-    ctx.fill();
-    ctx.stroke();
 
     const minWidth = minVisibleLinkWidth / transform.k;
     for (const link of links) {
@@ -53,7 +41,10 @@ export default function makeDrawer({
         break;
       }
 
-      if (!interModuleLinks && link.isInter) {
+      if (
+        (!interModuleLinks || Number.isFinite(timeBudgetMs)) &&
+        link.isInter
+      ) {
         continue;
       }
 
@@ -75,20 +66,26 @@ export default function makeDrawer({
       ctx.stroke();
     }
 
-    if (showNames) {
+    if (showNames && performance.now() - start < timeBudgetMs) {
       ctx.textBaseline = "bottom";
       ctx.fillStyle = "#333";
       ctx.strokeStyle = "#fff";
       ctx.lineWidth = 4;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "butt";
+      const minFontSize = minVisibleFontSize / transform.k;
+
       for (const node of nodes) {
+        if (node.fontSize! < minFontSize) {
+          break;
+        }
+
         ctx.font = `${node.fontSize!}px sans-serif`;
-        const x = node.x + nodeRadius;
-        const y = node.y - node.fontSize!;
+        const x = node.x + node.radius!;
+        const y = node.y - node.radius! / 3;
         ctx.strokeText(node.name, x, y);
         ctx.fillText(node.name, x, y);
       }
     }
-
-    ctx.restore();
   };
 }

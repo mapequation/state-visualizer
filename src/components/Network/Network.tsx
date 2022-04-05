@@ -4,7 +4,6 @@ import { Renderer, useRenderer } from "./Renderer";
 import { useSimulation } from "../../simulation";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
-import makeStateRadius from "../../lib/make-state-radius";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 
 export interface SharedProps {
@@ -36,7 +35,8 @@ export default function Network({
   const { nodes, states, links } = networkToDatum(network);
   const physicalLinks = aggregatePhysicalLinks(links);
 
-  // Sort links by weight to improve rendering performance.
+  // Sort nodes and links by flow/weight to improve rendering performance.
+  nodes.sort((a, b) => b.flow - a.flow);
   links.sort((a, b) => b.weight - a.weight);
 
   const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
@@ -48,15 +48,22 @@ export default function Network({
     return d3.scaleLinear().domain([0, maxWeight]).range(linkWidthRange);
   })();
 
-  const stateRadius = makeStateRadius(nodes, states, nodeRadius);
-
-  const fontSize = (() => {
-    const flow = d3.extent(nodes, (d) => d.flow) as number[];
-    return d3.scaleSqrt().domain(flow).range([15, rendererProps.fontSize]);
+  const stateRadius = (() => {
+    const flow = d3.extent(states, (d) => d.flow) as number[];
+    return d3.scaleSqrt().domain(flow).range([2, nodeRadius]);
   })();
+
+  const flow = d3.extent(nodes, (d) => d.flow) as number[];
+
+  const fontSize = d3
+    .scaleSqrt()
+    .domain(flow)
+    .range([15, rendererProps.fontSize]);
+  const radius = d3.scaleSqrt().domain(flow).range([2, nodeRadius]);
 
   for (const node of nodes) {
     node.fontSize = fontSize(node.flow);
+    node.radius = radius(node.flow);
   }
 
   for (const state of states) {
@@ -68,7 +75,7 @@ export default function Network({
   for (const link of links) {
     const isInter = link.source.moduleId !== link.target.moduleId;
     link.isInter = isInter;
-    link.stroke = !isInter ? link.source.stroke : "#333";
+    link.stroke = !isInter ? link.source.stroke : "#aaa";
     link.width = linkWidth(link.weight);
   }
 
