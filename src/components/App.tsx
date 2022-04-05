@@ -50,6 +50,9 @@ export default function App() {
         w="100%"
         h="100%"
         boxShadow="2xl"
+        zIndex={1}
+        borderColor="gray.100"
+        borderRightWidth={1}
         px={10}
         py={15}
         overflowY="scroll"
