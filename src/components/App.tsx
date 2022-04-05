@@ -11,6 +11,7 @@ import {
 import Network, { isValidRenderer, Renderer } from "./Network";
 import Settings from "./Settings";
 import Load from "./Load";
+import Logo from "./Logo";
 import ErrorBoundary from "../ErrorBoundary";
 import lumpStateNodes from "../lib/lump-states";
 import type { FlowStateNetwork } from "../lib/merge-states-clu";
@@ -53,7 +54,8 @@ export default function App() {
         py={15}
         overflowY="scroll"
       >
-        <Heading as="h1" size="md">
+        <Heading as="h1" size="md" display="flex" alignItems="center" gap={2}>
+          <Logo />
           State Network Visualizer
         </Heading>
 
