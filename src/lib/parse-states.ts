@@ -52,6 +52,12 @@ export default function parseStates(lines: string | string[]): StateNetwork {
       continue;
     }
 
+    if (line.startsWith("*")) {
+      console.warn("Unknown line:", line);
+      context = null;
+      continue;
+    }
+
     if (context === "nodes") {
       const [id, ...name] = line.split(" ");
       nodes.push({
