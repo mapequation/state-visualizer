@@ -88,21 +88,18 @@ function Canvas({ render }: CanvasProps) {
   useEffect(() => {
     const currentRef = ref.current;
     if (!currentRef) return;
+    const context = currentRef.getContext("2d");
+    if (!context) return;
 
     const resize = () => {
       currentRef.width = currentRef.clientWidth;
       currentRef.height = currentRef.clientHeight;
+      render(context);
     };
 
     resize();
 
     window.addEventListener("resize", resize);
-
-    const context = currentRef.getContext("2d");
-    if (!context) return;
-
-    render(context);
-
     return () => window.removeEventListener("resize", resize);
   }, [ref, render]);
 
