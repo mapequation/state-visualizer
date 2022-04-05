@@ -13,10 +13,6 @@ export default function makeDrawer({
   states,
   links,
   nodeRadius,
-  linkWidth,
-  stateRadius,
-  nodeFill,
-  nodeStroke,
   fontSize,
   showNames,
   minFps = 60,
@@ -41,10 +37,9 @@ export default function makeDrawer({
     ctx.stroke();
 
     for (const link of links) {
-      const lineWidth = linkWidth(link.weight);
       // Assume links are sorted by weight.
       if (
-        transform.k * lineWidth < minVisibleLinkWidth ||
+        transform.k * link.width! < minVisibleLinkWidth ||
         performance.now() - start > timeBudgetMs
       ) {
         break;
@@ -53,21 +48,17 @@ export default function makeDrawer({
       ctx.beginPath();
       ctx.moveTo(link.source.x, link.source.y);
       ctx.lineTo(link.target.x, link.target.y);
-      ctx.lineWidth = lineWidth;
-      ctx.strokeStyle =
-        link.source.moduleId === link.target.moduleId
-          ? nodeStroke[link.source.moduleId]
-          : "#333";
+      ctx.lineWidth = link.width!;
+      ctx.strokeStyle = link.stroke!;
       ctx.stroke();
     }
 
     ctx.lineWidth = 2;
     for (const state of states) {
-      const r = stateRadius(state.flow);
       ctx.beginPath();
-      ctx.arc(state.x, state.y, r, 0, 2 * Math.PI);
-      ctx.fillStyle = nodeFill[state.moduleId];
-      ctx.strokeStyle = nodeStroke[state.moduleId];
+      ctx.arc(state.x, state.y, state.radius!, 0, 2 * Math.PI);
+      ctx.fillStyle = state.fill!;
+      ctx.strokeStyle = state.stroke!;
       ctx.fill();
       ctx.stroke();
     }

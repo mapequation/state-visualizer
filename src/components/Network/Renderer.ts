@@ -31,10 +31,6 @@ export function useRenderer(renderer: Renderer) {
 
 export interface RendererProps extends SharedProps {
   simulation: Simulation;
-  nodeFill: string[];
-  nodeStroke: string[];
-  linkWidth: (d: number) => number;
-  stateRadius: (d: number) => number;
   nodes: NodeDatum[];
   states: StateNodeDatum[];
   links: LinkDatum[];

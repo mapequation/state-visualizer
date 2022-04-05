@@ -35,11 +35,7 @@ function WebGLRenderer({
   nodes,
   states,
   links,
-  nodeFill,
-  nodeStroke,
   nodeRadius,
-  linkWidth,
-  stateRadius,
   showNames,
   fontSize,
 }: WebGLRendererProps) {
@@ -90,14 +86,14 @@ function WebGLRenderer({
   d3.select(three.gl.domElement).call(drag);
 
   const stateMaterials = useMemo(() => {
-    const moduleIds = new Set(states.map((state) => state.moduleId));
+    const colors = new Set(states.map((state) => state.fill));
     return new Map(
-      Array.from(moduleIds).map((moduleId) => [
-        moduleId,
-        new THREE.MeshStandardMaterial({ color: nodeFill[moduleId] }),
+      Array.from(colors).map((color) => [
+        color,
+        new THREE.MeshStandardMaterial({ color }),
       ])
     );
-  }, [states, nodeFill]);
+  }, [states]);
 
   return (
     <>
@@ -118,12 +114,8 @@ function WebGLRenderer({
             key={i}
             link={link}
             z={15}
-            width={linkWidth(link.weight)}
-            color={
-              link.source.moduleId === link.target.moduleId
-                ? nodeStroke[link.source.moduleId]
-                : "#333"
-            }
+            width={link.width!}
+            color={link.stroke!}
           />
         ))}
         {states.map((state, i) => (
@@ -131,8 +123,8 @@ function WebGLRenderer({
             key={i}
             node={state}
             z={15}
-            r={stateRadius(state.flow)}
-            material={stateMaterials.get(state.moduleId)}
+            r={state.radius!}
+            material={stateMaterials.get(state.fill!)}
           />
         ))}
       </object3D>

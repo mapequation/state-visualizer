@@ -14,6 +14,9 @@ export type StateNodeDatum = FlowStateNode & {
   y: number;
   fx?: number;
   fy?: number;
+  fill?: string;
+  stroke?: string;
+  radius?: number;
 };
 
 export type LinkDatum<NodeType = StateNodeDatum> = Omit<
@@ -22,6 +25,8 @@ export type LinkDatum<NodeType = StateNodeDatum> = Omit<
 > & {
   source: NodeType;
   target: NodeType;
+  width?: number;
+  stroke?: string;
 };
 
 export type NetworkDatum = {

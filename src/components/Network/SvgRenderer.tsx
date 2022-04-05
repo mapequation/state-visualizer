@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import linkRenderer from "../../lib/link-renderer";
 import type { RendererProps } from "./Renderer";
 import type { LinkDatum, NodeDatum } from "../../types/datum";
 
@@ -11,11 +10,7 @@ export default function SVGRenderer({
   nodes,
   states,
   links,
-  nodeFill,
-  nodeStroke,
   nodeRadius,
-  linkWidth,
-  stateRadius,
   showNames,
   fontSize,
 }: SVGRendererProps) {
@@ -68,16 +63,13 @@ export default function SVGRenderer({
     const link = svg.selectAll(".link").data(links);
     const name = svg.selectAll(".name").data(nodes);
 
-    const drawLink = linkRenderer(stateRadius);
-
     simulation.on("tick", () => {
       link.each(function (d: LinkDatum) {
-        const { x1, y1, x2, y2 } = drawLink(d);
         d3.select(this)
-          .attr("x1", x1)
-          .attr("y1", y1)
-          .attr("x2", x2)
-          .attr("y2", y2);
+          .attr("x1", d.source.x)
+          .attr("y1", d.source.y)
+          .attr("x2", d.target.x)
+          .attr("y2", d.target.y);
       });
 
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
@@ -86,7 +78,7 @@ export default function SVGRenderer({
 
       name.attr("x", (d) => d.x).attr("y", (d) => d.y);
     });
-  }, [ref, nodes, states, links, stateRadius, simulation, stateSimulation]);
+  }, [ref, nodes, states, links, simulation, stateSimulation]);
 
   return (
     <svg
@@ -132,8 +124,8 @@ export default function SVGRenderer({
               y1={0}
               x2={0}
               y2={0}
-              strokeWidth={linkWidth(link.weight)}
-              stroke="#333"
+              strokeWidth={link.width}
+              stroke={link.stroke}
               opacity={0.8}
               // markerEnd="url(#arrow)"
             />
@@ -146,9 +138,9 @@ export default function SVGRenderer({
               key={state.id}
               cx={0}
               cy={0}
-              r={stateRadius(state.flow)}
-              fill={nodeFill[state.moduleId]}
-              stroke={nodeStroke[state.moduleId]}
+              r={state.radius}
+              fill={state.fill}
+              stroke={state.stroke}
               strokeWidth={2}
             />
           ))}

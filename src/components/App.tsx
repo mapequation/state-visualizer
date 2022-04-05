@@ -132,14 +132,14 @@ export default function App() {
           <ErrorBoundary>
             {net != null && (
               <Network
+                renderer={renderer}
                 network={net}
-                fontSize={fontSize}
                 nodeRadius={40}
                 linkDistance={linkDistance}
                 linkWidthRange={linkWidthRange}
                 nodeCharge={nodeCharge}
+                fontSize={fontSize}
                 showNames={showNames}
-                renderer={renderer}
               />
             )}
           </ErrorBoundary>

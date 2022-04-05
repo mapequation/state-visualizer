@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
 import { Renderer, useRenderer } from "./Renderer";
@@ -9,28 +8,28 @@ import makeStateRadius from "../../lib/make-state-radius";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 
 export interface SharedProps {
+  nodeRadius: number;
   showNames: boolean;
   fontSize: number;
-  nodeRadius: number;
 }
 
 export interface NetworkProps extends SharedProps {
+  renderer?: Renderer;
   network: FlowStateNetwork;
   linkDistance?: number;
   linkWidthRange?: number[];
   nodeCharge?: number;
   scheme?: c3.SchemeName;
-  renderer?: Renderer;
 }
 
 export default function Network({
+  renderer = "canvas",
   network,
   nodeRadius = 40,
   linkDistance = 100,
   linkWidthRange = [0.2, 5],
   nodeCharge = -500,
   scheme = "Sinebow",
-  renderer = "canvas",
   ...rendererProps
 }: NetworkProps) {
   const { nodes, states, links } = networkToDatum(network);
@@ -49,15 +48,26 @@ export default function Network({
     saturation: 0.8,
   });
 
-  const linkWidth = useMemo(() => {
+  const linkWidth = (() => {
     const maxWeight = d3.max(links, (d) => d.weight) as number;
     return d3.scaleLinear().domain([0, maxWeight]).range(linkWidthRange);
-  }, [links, linkWidthRange]);
+  })();
 
-  const stateRadius = useMemo(
-    () => makeStateRadius(nodes, states, nodeRadius),
-    [nodes, states, nodeRadius]
-  );
+  const stateRadius = makeStateRadius(nodes, states, nodeRadius);
+
+  for (const state of states) {
+    state.fill = fillColor[state.moduleId];
+    state.stroke = strokeColor[state.moduleId];
+    state.radius = stateRadius(state.flow);
+  }
+
+  for (const link of links) {
+    link.stroke =
+      link.source.moduleId === link.target.moduleId
+        ? strokeColor[link.source.moduleId]
+        : "#333";
+    link.width = linkWidth(link.weight);
+  }
 
   const simulation = useSimulation({
     nodes,
@@ -78,11 +88,7 @@ export default function Network({
       nodes={nodes}
       states={states}
       links={links}
-      nodeFill={fillColor}
-      nodeStroke={strokeColor}
       nodeRadius={nodeRadius}
-      linkWidth={linkWidth}
-      stateRadius={stateRadius}
       {...rendererProps}
     />
   );
