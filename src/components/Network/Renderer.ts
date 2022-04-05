@@ -3,7 +3,7 @@ import SVGRenderer from "./SvgRenderer";
 import CanvasRenderer from "./CanvasRenderer";
 import WebGLRenderer from "./WebGlRenderer";
 import type { SharedProps } from "./Network";
-import type { Simulation } from "../../hooks/useSimulation";
+import type { Simulation } from "../../simulation";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 export type Renderer = "svg" | "canvas" | "webgl";

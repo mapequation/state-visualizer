@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import * as d3 from "d3";
 import * as c3 from "@mapequation/c3";
 import { Renderer, useRenderer } from "./Renderer";
+import { useSimulation } from "../../simulation";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import networkToDatum from "../../lib/network-to-datum";
-import useSimulation from "../../hooks/useSimulation";
 import { clamp } from "../../lib/utils";
 import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 
