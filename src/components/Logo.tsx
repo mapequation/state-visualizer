@@ -1,6 +1,7 @@
 export default function Logo() {
   return (
     <svg
+      className="logo"
       xmlns="http://www.w3.org/2000/svg"
       version="1.1"
       viewBox="0 0 119.6 96.14"

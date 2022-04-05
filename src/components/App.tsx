@@ -55,7 +55,9 @@ export default function App() {
         overflowY="scroll"
       >
         <Heading as="h1" size="md" display="flex" alignItems="center" gap={2}>
-          <Logo />
+          <a href="//mapequation.org">
+            <Logo />
+          </a>
           State Network Visualizer
         </Heading>
 
