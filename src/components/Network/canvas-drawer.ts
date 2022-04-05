@@ -1,11 +1,16 @@
 import * as d3 from "d3";
 import type { CanvasRendererProps } from "./CanvasRenderer";
 
-type DrawerOptions = {
+type MakeDrawerOptions = {
   ctx: CanvasRenderingContext2D;
   minFps?: number;
   minVisibleLinkWidth?: number;
-} & Omit<CanvasRendererProps, "simulation">;
+} & Omit<CanvasRendererProps, "simulation" | "interModuleLinks">;
+
+type DrawerOptions = {
+  timeBudgetMs?: number;
+  interModuleLinks?: boolean;
+};
 
 export default function makeDrawer({
   ctx,
@@ -15,11 +20,16 @@ export default function makeDrawer({
   nodeRadius,
   fontSize,
   showNames,
-  interModuleLinks,
   minFps = 60,
   minVisibleLinkWidth = 0.01,
-}: DrawerOptions) {
-  return (transform: d3.ZoomTransform, timeBudgetMs = 1000 / minFps) => {
+}: MakeDrawerOptions) {
+  return (
+    transform: d3.ZoomTransform,
+    {
+      timeBudgetMs = 1000 / minFps,
+      interModuleLinks = true,
+    }: DrawerOptions = {}
+  ) => {
     const start = performance.now();
     ctx.save();
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);

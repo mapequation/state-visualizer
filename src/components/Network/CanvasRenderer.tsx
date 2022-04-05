@@ -7,10 +7,13 @@ export interface CanvasRendererProps extends RendererProps {}
 
 export default function CanvasRenderer({
   simulation: { simulation, stateSimulation },
+  interModuleLinks,
   ...opts
 }: CanvasRendererProps) {
   const render = (ctx: CanvasRenderingContext2D) => {
     const draw = makeDrawer({ ctx, ...opts });
+
+    const dynamicInterModuleLinks = interModuleLinks && opts.nodes.length < 500;
 
     let currentTransform = d3.zoomIdentity
       .translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
@@ -21,9 +24,11 @@ export default function CanvasRenderer({
       .scaleExtent([0.05, 1000])
       .on("zoom", (e) => {
         currentTransform = e.transform;
-        draw(currentTransform);
+        draw(currentTransform, { interModuleLinks: dynamicInterModuleLinks });
       })
-      .on("end", () => draw(currentTransform, Infinity));
+      .on("end", () =>
+        draw(currentTransform, { interModuleLinks, timeBudgetMs: Infinity })
+      );
 
     const drag = d3
       .drag<HTMLCanvasElement, unknown>()
@@ -57,10 +62,12 @@ export default function CanvasRenderer({
       .call(zoom.transform, currentTransform);
 
     simulation
-      .on("tick", () => draw(currentTransform))
+      .on("tick", () =>
+        draw(currentTransform, { interModuleLinks: dynamicInterModuleLinks })
+      )
       .on("end", () => {
         console.log("simulation ended");
-        draw(currentTransform, Infinity);
+        draw(currentTransform, { interModuleLinks, timeBudgetMs: Infinity });
       });
   };
 
