@@ -85,7 +85,6 @@ export default function Network({
     links: physicalLinks,
     nodeRadius,
     nodeCharge,
-    stateRadius,
     linkDistance,
     forceCenter,
   });

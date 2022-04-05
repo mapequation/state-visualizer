@@ -8,7 +8,6 @@ export interface SimulationOptions {
   links: LinkDatum<NodeDatum>[];
   nodeRadius: number;
   nodeCharge: number;
-  stateRadius: (d: number) => number;
   linkDistance: number;
   initialIterations?: number;
   forceCenter?: number[];
@@ -25,7 +24,6 @@ export function createSimulation({
   links,
   nodeRadius,
   nodeCharge,
-  stateRadius,
   linkDistance,
   initialIterations = 100,
   forceCenter = [0, 0],
@@ -59,7 +57,7 @@ export function createSimulation({
     .forceSimulation(states)
     .force(
       "collide",
-      d3.forceCollide<StateNodeDatum>(10).radius((d) => stateRadius(d.flow))
+      d3.forceCollide<StateNodeDatum>(10).radius((d) => d.radius!)
     )
     .force(
       "radial",
