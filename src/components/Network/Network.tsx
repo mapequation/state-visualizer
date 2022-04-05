@@ -43,12 +43,6 @@ export default function Network({
 
   const fillColor = c3.colors(512, { scheme });
 
-  const strokeColor = c3.colors(512, {
-    scheme,
-    lightness: 0.3,
-    saturation: 0.8,
-  });
-
   const linkWidth = (() => {
     const maxWeight = d3.max(links, (d) => d.weight) as number;
     return d3.scaleLinear().domain([0, maxWeight]).range(linkWidthRange);
@@ -58,14 +52,14 @@ export default function Network({
 
   for (const state of states) {
     state.fill = fillColor[state.moduleId];
-    state.stroke = strokeColor[state.moduleId];
+    state.stroke = d3.rgb(state.fill).darker().toString();
     state.radius = stateRadius(state.flow);
   }
 
   for (const link of links) {
     const isInter = link.source.moduleId !== link.target.moduleId;
     link.isInter = isInter;
-    link.stroke = !isInter ? strokeColor[link.source.moduleId] : "#333";
+    link.stroke = !isInter ? link.source.stroke : "#333";
     link.width = linkWidth(link.weight);
   }
 
