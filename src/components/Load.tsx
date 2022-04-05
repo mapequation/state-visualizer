@@ -5,9 +5,11 @@ import {
   FormControl,
   FormErrorMessage,
   FormHelperText,
+  List,
+  ListIcon,
   ListItem,
-  UnorderedList,
 } from "@chakra-ui/react";
+import { MdCheckCircle } from "react-icons/md";
 import { parseClu } from "@mapequation/infomap/parser";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
@@ -100,15 +102,28 @@ export default function Load({
       {files.length !== 0 && (
         <FormHelperText mt={5}>
           <strong>Files:</strong>
-          <UnorderedList>
+          <List>
             {files.map((file) => (
-              <ListItem key={file.name}>{file.name}</ListItem>
+              <ListItem key={file.name}>
+                <ListIcon as={MdCheckCircle} color="green.500" />
+                {file.name} ({humanFileSize(file.size)})
+              </ListItem>
             ))}
-          </UnorderedList>
+          </List>
         </FormHelperText>
       )}
 
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );
+}
+
+function humanFileSize(bytes: number): string {
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 B";
+  const i = parseInt(
+    Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
+    10
+  );
+  return `${Math.round(bytes / Math.pow(1024, i))} ${sizes[i]}`;
 }
