@@ -18,7 +18,6 @@ export default function makeDrawer({
   states,
   links,
   nodeRadius,
-  fontSize,
   showNames,
   minFps = 60,
   minVisibleLinkWidth = 0.01,
@@ -77,14 +76,14 @@ export default function makeDrawer({
     }
 
     if (showNames) {
-      ctx.font = `${fontSize}px sans-serif`;
       ctx.textBaseline = "bottom";
       ctx.fillStyle = "#333";
       ctx.strokeStyle = "#fff";
       ctx.lineWidth = 4;
       for (const node of nodes) {
+        ctx.font = `${node.fontSize!}px sans-serif`;
         const x = node.x + nodeRadius;
-        const y = node.y - fontSize / 2;
+        const y = node.y - node.fontSize!;
         ctx.strokeText(node.name, x, y);
         ctx.fillText(node.name, x, y);
       }

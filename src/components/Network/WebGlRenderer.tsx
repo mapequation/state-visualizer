@@ -37,7 +37,6 @@ function WebGLRenderer({
   links,
   nodeRadius,
   showNames,
-  fontSize,
   interModuleLinks,
 }: WebGLRendererProps) {
   const three = useThree();
@@ -102,13 +101,7 @@ function WebGLRenderer({
 
       <object3D scale={0.02}>
         {nodes.map((node, i) => (
-          <Node
-            key={i}
-            node={node}
-            r={nodeRadius}
-            fontSize={fontSize}
-            showName={showNames}
-          />
+          <Node key={i} node={node} r={nodeRadius} showName={showNames} />
         ))}
         {links.map((link, i) => (
           <Link
@@ -145,13 +138,11 @@ function Node({
   node,
   z = 0,
   r,
-  fontSize,
   showName = true,
 }: {
   node: NodeDatum | StateNodeDatum;
   z?: number;
   r: number;
-  fontSize: number;
   showName?: boolean;
 }) {
   const ref = useRef<THREE.Mesh>();
@@ -175,9 +166,9 @@ function Node({
         position={[0, 0, 22]}
         strokeColor="#fff"
         strokeWidth={0.2}
-        fontSize={fontSize * 0.7}
+        fontSize={30}
         anchorX={-r * 0.7}
-        anchorY={-fontSize * 1.5}
+        anchorY={-35}
         visible={showName}
       >
         {node.name}

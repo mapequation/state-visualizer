@@ -12,7 +12,6 @@ export default function SVGRenderer({
   links,
   nodeRadius,
   showNames,
-  fontSize,
   interModuleLinks,
 }: SVGRendererProps) {
   const ref = useRef<SVGSVGElement>(null);
@@ -160,9 +159,9 @@ export default function SVGRenderer({
                 textAnchor="start"
                 dominantBaseline="central"
                 fontFamily="Helvetica"
-                fontSize={fontSize}
+                fontSize={node.fontSize}
                 dx={nodeRadius}
-                dy={-fontSize}
+                dy={-node.fontSize!}
                 fill="#333"
                 stroke="#fff"
                 strokeWidth={4}

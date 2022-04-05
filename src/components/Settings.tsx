@@ -147,12 +147,12 @@ export default function Settings({
         <FormLabel w="60%">Font size</FormLabel>
         <Slider
           defaultValue={fontSize}
-          min={10}
+          min={15}
           max={50}
           onChangeEnd={(v) => setFontSize(v)}
           onMouseEnter={() => setShowFontSizeTooltip(true)}
           onMouseLeave={() => setShowFontSizeTooltip(false)}
-          isDisabled={!showNames}
+          isDisabled={!showNames || renderer === "webgl"}
         >
           <SliderTrack>
             <SliderFilledTrack />

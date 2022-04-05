@@ -10,7 +10,6 @@ import type { FlowStateNetwork } from "../../lib/merge-states-clu";
 export interface SharedProps {
   nodeRadius: number;
   showNames: boolean;
-  fontSize: number;
   interModuleLinks: boolean;
 }
 
@@ -20,6 +19,7 @@ export interface NetworkProps extends SharedProps {
   linkDistance?: number;
   linkWidthRange?: number[];
   nodeCharge?: number;
+  fontSize: number;
   scheme?: c3.SchemeName;
 }
 
@@ -49,6 +49,15 @@ export default function Network({
   })();
 
   const stateRadius = makeStateRadius(nodes, states, nodeRadius);
+
+  const fontSize = (() => {
+    const flow = d3.extent(nodes, (d) => d.flow) as number[];
+    return d3.scaleSqrt().domain(flow).range([15, rendererProps.fontSize]);
+  })();
+
+  for (const node of nodes) {
+    node.fontSize = fontSize(node.flow);
+  }
 
   for (const state of states) {
     state.fill = fillColor[state.moduleId];
