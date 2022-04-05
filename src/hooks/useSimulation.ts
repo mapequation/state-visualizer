@@ -34,20 +34,14 @@ export default function useSimulation({
   return useMemo(() => {
     console.time("simulation");
     const forceLink = (() => {
-      const [minWeight, maxWeight] = d3.extent(
-        links,
-        (d) => d.weight
-      ) as number[];
+      const domain = d3.extent(links, (d) => d.weight) as number[];
 
       const distance = d3
         .scaleLinear()
-        .domain([minWeight, maxWeight])
+        .domain(domain)
         .range([linkDistance, 10]);
 
-      const strength = d3
-        .scaleLinear()
-        .domain([minWeight, maxWeight])
-        .range([0.5, 1]);
+      const strength = d3.scaleLinear().domain(domain).range([0.5, 1]);
 
       const force = d3.forceLink(links);
       const defaultStrength = force.strength();
