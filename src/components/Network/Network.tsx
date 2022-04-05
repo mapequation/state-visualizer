@@ -11,6 +11,7 @@ export interface SharedProps {
   nodeRadius: number;
   showNames: boolean;
   fontSize: number;
+  interModuleLinks: boolean;
 }
 
 export interface NetworkProps extends SharedProps {
@@ -62,10 +63,9 @@ export default function Network({
   }
 
   for (const link of links) {
-    link.stroke =
-      link.source.moduleId === link.target.moduleId
-        ? strokeColor[link.source.moduleId]
-        : "#333";
+    const isInter = link.source.moduleId !== link.target.moduleId;
+    link.isInter = isInter;
+    link.stroke = !isInter ? strokeColor[link.source.moduleId] : "#333";
     link.width = linkWidth(link.weight);
   }
 

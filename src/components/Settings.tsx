@@ -23,6 +23,8 @@ import type { Renderer } from "./Network";
 interface SettingsProps {
   useLumping: boolean;
   setUseLumping: (useLumping: boolean) => void;
+  interModuleLinks: boolean;
+  setInterModuleLinks: (interModuleLinks: boolean) => void;
   showNames: boolean;
   setShowNames: (showNames: boolean) => void;
   linkDistance: number;
@@ -40,6 +42,8 @@ interface SettingsProps {
 export default function Settings({
   useLumping,
   setUseLumping,
+  interModuleLinks,
+  setInterModuleLinks,
   showNames,
   setShowNames,
   linkDistance,
@@ -105,6 +109,25 @@ export default function Settings({
         <FormHelperText>
           Lump state nodes in the same module and physical node into one state
           node. Improves performance.
+        </FormHelperText>
+      </FormControl>
+
+      <FormControl mt={5}>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="lumping" mb="0">
+            Inter-module links
+          </FormLabel>
+          <Switch
+            size="sm"
+            id="lumping"
+            isChecked={interModuleLinks}
+            onChange={(event) => setInterModuleLinks(event.target.checked)}
+          />
+        </Flex>
+        <FormHelperText>
+          Control if links whose source and target modules differ should be
+          drawn or not. Regardless, they take part in the simulation. Defaults
+          to off for large networks.
         </FormHelperText>
       </FormControl>
 

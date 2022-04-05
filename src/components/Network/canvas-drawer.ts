@@ -15,6 +15,7 @@ export default function makeDrawer({
   nodeRadius,
   fontSize,
   showNames,
+  interModuleLinks,
   minFps = 60,
   minVisibleLinkWidth = 0.01,
 }: DrawerOptions) {
@@ -36,13 +37,15 @@ export default function makeDrawer({
     ctx.fill();
     ctx.stroke();
 
+    const minWidth = minVisibleLinkWidth / transform.k;
     for (const link of links) {
       // Assume links are sorted by weight.
-      if (
-        transform.k * link.width! < minVisibleLinkWidth ||
-        performance.now() - start > timeBudgetMs
-      ) {
+      if (link.width! < minWidth || performance.now() - start > timeBudgetMs) {
         break;
+      }
+
+      if (!interModuleLinks && link.isInter) {
+        continue;
       }
 
       ctx.beginPath();

@@ -13,6 +13,7 @@ export default function SVGRenderer({
   nodeRadius,
   showNames,
   fontSize,
+  interModuleLinks,
 }: SVGRendererProps) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -118,6 +119,9 @@ export default function SVGRenderer({
         <g className="links">
           {links.map((link) => (
             <line
+              visibility={
+                interModuleLinks || !link.isInter ? "visible" : "hidden"
+              }
               className="link"
               key={`${link.source.id}-${link.target.id}`}
               x1={0}

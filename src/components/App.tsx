@@ -22,6 +22,7 @@ const params = Object.fromEntries(
 export default function App() {
   const [network, setNetwork] = useState<FlowStateNetwork>();
   const [useLumping, setUseLumping] = useState(true);
+  const [interModuleLinks, setInterModuleLinks] = useState(true);
   const [showNames, setShowNames] = useState(true);
   const [fontSize, setFontSize] = useState(40);
   const [linkDistance, setLinkDistance] = useState(100);
@@ -35,6 +36,9 @@ export default function App() {
     if (!network) return;
     console.time("lump");
     const net = useLumping ? lumpStateNodes(network) : network;
+    if (net.nodes.length > 1000) {
+      setInterModuleLinks(false);
+    }
     console.timeEnd("lump");
     return net;
   }, [network, useLumping]);
@@ -75,6 +79,8 @@ export default function App() {
         <Settings
           useLumping={useLumping}
           setUseLumping={setUseLumping}
+          interModuleLinks={interModuleLinks}
+          setInterModuleLinks={setInterModuleLinks}
           showNames={showNames}
           setShowNames={setShowNames}
           linkDistance={linkDistance}
@@ -140,6 +146,7 @@ export default function App() {
                 nodeCharge={nodeCharge}
                 fontSize={fontSize}
                 showNames={showNames}
+                interModuleLinks={interModuleLinks}
               />
             )}
           </ErrorBoundary>

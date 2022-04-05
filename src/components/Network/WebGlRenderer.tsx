@@ -38,6 +38,7 @@ function WebGLRenderer({
   nodeRadius,
   showNames,
   fontSize,
+  interModuleLinks,
 }: WebGLRendererProps) {
   const three = useThree();
   const controlsRef = useRef<MapControlsImpl>(null);
@@ -116,6 +117,7 @@ function WebGLRenderer({
             z={15}
             width={link.width!}
             color={link.stroke!}
+            visible={interModuleLinks || !link.isInter}
           />
         ))}
         {states.map((state, i) => (
@@ -219,11 +221,13 @@ function Link({
   z = 0,
   color,
   width,
+  visible,
 }: {
   link: LinkDatum;
   z?: number;
   color: string;
   width: number;
+  visible: boolean;
 }) {
   const ref = useRef<THREE.Object3D>(null);
   const { posX, posY, scaleY, rotateZ } = getLinkTransform(link);
@@ -245,6 +249,7 @@ function Link({
       position={[posX, -posY, z]}
       scale={[1, scaleY, 1]}
       rotation={[0, 0, rotateZ]}
+      visible={visible}
     >
       <UnitVector lineWidth={width / 3} color={color} />
     </object3D>

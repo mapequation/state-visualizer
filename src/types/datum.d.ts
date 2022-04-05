@@ -27,6 +27,7 @@ export type LinkDatum<NodeType = StateNodeDatum> = Omit<
   target: NodeType;
   width?: number;
   stroke?: string;
+  isInter?: boolean;
 };
 
 export type NetworkDatum = {
