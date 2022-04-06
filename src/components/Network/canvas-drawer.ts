@@ -41,10 +41,7 @@ export default function makeDrawer({
         break;
       }
 
-      if (
-        (!interModuleLinks || Number.isFinite(timeBudgetMs)) &&
-        link.isInter
-      ) {
+      if (!interModuleLinks && link.isInter) {
         continue;
       }
 
@@ -66,7 +63,7 @@ export default function makeDrawer({
       ctx.stroke();
     }
 
-    if (showNames && performance.now() - start < timeBudgetMs) {
+    if (showNames) {
       ctx.textBaseline = "bottom";
       ctx.fillStyle = "#333";
       ctx.strokeStyle = "#fff";

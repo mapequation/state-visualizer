@@ -83,7 +83,7 @@ export function createSimulation({
 
   if (nodes.length > 1000) {
     simulation.stop();
-    stateSimulation.tick(initialIterations);
+    stateSimulation.tick(10);
     stateSimulation.stop();
   }
 
