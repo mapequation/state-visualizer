@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { forceRadial } from "./force-radial";
+import { forcePosition } from "./force-position";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../types/datum";
 
 export interface SimulationOptions {
@@ -60,12 +60,11 @@ export function createSimulation({
       d3.forceCollide<StateNodeDatum>(10).radius((d) => d.radius!)
     )
     .force(
-      "radial",
-      forceRadial(
-        0,
+      "position",
+      forcePosition(
         (d: StateNodeDatum) => d.physicalNode.x,
         (d: StateNodeDatum) => d.physicalNode.y
-      ).strength(1)
+      ).strength(0.3)
     );
 
   const initialDecay = simulation.alphaDecay();
