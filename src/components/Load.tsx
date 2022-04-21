@@ -10,7 +10,7 @@ import {
   ListItem,
 } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
-import { parseClu } from "@mapequation/infomap/parser";
+import { parseClu } from "@mapequation/infomap-parser";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
 import readFile from "../lib/read-file";

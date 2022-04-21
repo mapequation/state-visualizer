@@ -8,24 +8,23 @@
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@mapequation/c3": "^1.1.1",
-    "@mapequation/infomap": "../../infomap",
+    "@mapequation/infomap": "^2.3.0",
+    "@mapequation/infomap-parser": "^1.0.1",
     "@react-three/drei": "^9.0.1",
     "@react-three/fiber": "^8.0.6",
     "@types/d3": "^7.1.0",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^16.11.26",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
+    "@types/node": "^17.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
     "@types/three": "^0.139.0",
     "d3": "^7.4.0",
     "framer-motion": "^6.2.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-icons": "^4.3.1",
-    "react-scripts": "5.0.0",
+    "react-scripts": "^5.0.0",
     "three": "^0.139.2",
-    "typescript": "^4.6.3",
-    "web-vitals": "^2.1.4"
+    "typescript": "^4.6.3"
   },
   "devDependencies": {
     "prettier": "^2.6.1"
@@ -33,15 +32,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "predeploy": "npm run build",
     "deploy": "ssh mapequation \"rm -rf /var/www/state-visualizer/static\" && scp -r build/* mapequation:/var/www/state-visualizer"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app"]
   },
   "browserslist": {
     "production": [

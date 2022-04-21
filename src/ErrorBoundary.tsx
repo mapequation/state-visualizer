@@ -5,7 +5,7 @@ export default class ErrorBoundary extends Component {
     hasError: false,
   };
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(_: Error) {
     return { hasError: true };
   }
 
@@ -18,6 +18,7 @@ export default class ErrorBoundary extends Component {
       return <h1>Something went wrong.</h1>;
     }
 
+    // @ts-ignore
     return this.props.children;
   }
 }

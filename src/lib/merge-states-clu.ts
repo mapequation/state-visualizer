@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Result } from "@mapequation/infomap/parser";
+import { Result } from "@mapequation/infomap-parser";
 import { CluStateNode } from "@mapequation/infomap/filetypes";
 import type {
   Link,

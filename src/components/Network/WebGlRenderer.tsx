@@ -145,7 +145,7 @@ function Node({
   r: number;
   showName?: boolean;
 }) {
-  const ref = useRef<THREE.Mesh>();
+  const ref = useRef<THREE.Object3D>(null);
 
   useFrame(() => {
     if (!ref.current) return;
@@ -188,7 +188,7 @@ function StateNode({
   r: number;
   material?: THREE.Material;
 }) {
-  const ref = useRef<THREE.Mesh>();
+  const ref = useRef<THREE.Mesh>(null);
 
   useFrame(() => {
     if (!ref.current) return;
