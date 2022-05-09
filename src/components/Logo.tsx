@@ -1,5 +1,3 @@
-import "./Logo.css";
-
 export default function Logo({ width = 50, height = 50 }) {
   return (
     <svg
@@ -9,6 +7,28 @@ export default function Logo({ width = 50, height = 50 }) {
       width={width}
       height={height}
     >
+      <style>
+        {`
+          svg.mapequation-logo g.compass {
+            transform: translateY(0);
+            transition: transform 200ms ease-in-out;
+            animation: compass 1 1s;
+          }
+          
+          svg.mapequation-logo:hover g.compass {
+            transform: translateY(-10px);
+          }
+          
+          @keyframes compass {
+            0% {
+              transform: scale(1) translate(-60px, 20px);
+            }
+            100% {
+              transform: scale(1) translate(0, 0);
+            }
+          }
+        `}
+      </style>
       <path
         fill="none"
         stroke="#fff"
