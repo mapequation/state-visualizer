@@ -64,7 +64,7 @@ export default function Settings({
 
   return (
     <>
-      <FormControl mt={10}>
+      {/*<FormControl mt={10}>
         <FormLabel>Renderer</FormLabel>
         <ButtonGroup isAttached size="sm">
           <Button
@@ -92,7 +92,7 @@ export default function Settings({
         <FormHelperText>
           Canvas is faster than SVG. WebGL renderer is experimental.
         </FormHelperText>
-      </FormControl>
+      /FormControl>*/}
 
       <FormControl mt={5}>
         <Flex alignItems="center">
