@@ -51,7 +51,7 @@ export default function App() {
         borderRightWidth={1}
         px={10}
         py={15}
-        overflowY="scroll"
+        overflowY="auto"
       >
         <Heading as="h1" size="md" display="flex" alignItems="center" gap={2}>
           <a href="//mapequation.org">
