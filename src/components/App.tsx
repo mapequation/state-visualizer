@@ -11,7 +11,6 @@ import {
 import Network, { isValidRenderer, Renderer } from "./Network";
 import Settings from "./Settings";
 import Load from "./Load";
-import Logo from "./Logo";
 import ErrorBoundary from "../ErrorBoundary";
 import lumpStateNodes from "../lib/lump-states";
 import type { FlowStateNetwork } from "../lib/merge-states-clu";
@@ -56,7 +55,12 @@ export default function App() {
       >
         <Heading as="h1" size="md" display="flex" alignItems="center" gap={2}>
           <a href="//mapequation.org">
-            <Logo />
+            <img
+              src="//www.mapequation.org/assets/img/twocolormapicon_whiteboarder.svg"
+              width="32px"
+              height="32px"
+              alt=""
+            />
           </a>
           State Network Visualizer
         </Heading>
