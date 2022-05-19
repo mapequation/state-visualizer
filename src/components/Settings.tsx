@@ -1,7 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
-  ButtonGroup,
   Flex,
   FormControl,
   FormHelperText,
@@ -54,8 +52,6 @@ export default function Settings({
   setNodeCharge,
   fontSize,
   setFontSize,
-  renderer,
-  setRenderer,
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
@@ -64,36 +60,6 @@ export default function Settings({
 
   return (
     <>
-      {/*<FormControl mt={10}>
-        <FormLabel>Renderer</FormLabel>
-        <ButtonGroup isAttached size="sm">
-          <Button
-            isDisabled={renderer === "svg"}
-            colorScheme={renderer === "svg" ? "blue" : "gray"}
-            onClick={() => setRenderer("svg")}
-          >
-            SVG
-          </Button>
-          <Button
-            isDisabled={renderer === "canvas"}
-            colorScheme={renderer === "canvas" ? "blue" : "gray"}
-            onClick={() => setRenderer("canvas")}
-          >
-            Canvas
-          </Button>
-          <Button
-            isDisabled={renderer === "webgl"}
-            colorScheme={renderer === "webgl" ? "blue" : "gray"}
-            onClick={() => setRenderer("webgl")}
-          >
-            WebGL
-          </Button>
-        </ButtonGroup>
-        <FormHelperText>
-          Canvas is faster than SVG. WebGL renderer is experimental.
-        </FormHelperText>
-      /FormControl>*/}
-
       <FormControl mt={5}>
         <Flex alignItems="center">
           <FormLabel htmlFor="lumping" mb="0">
@@ -151,7 +117,7 @@ export default function Settings({
           onChangeEnd={(v) => setFontSize(v)}
           onMouseEnter={() => setShowFontSizeTooltip(true)}
           onMouseLeave={() => setShowFontSizeTooltip(false)}
-          isDisabled={!showNames || renderer === "webgl"}
+          isDisabled={!showNames}
         >
           <SliderTrack>
             <SliderFilledTrack />
