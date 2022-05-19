@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
 import { parseClu } from "@mapequation/infomap-parser";
+import Infomap from "@mapequation/infomap";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
 import readFile from "../lib/read-file";
@@ -47,8 +48,8 @@ export default function Load({
 
       const netFiles = files.filter((f) => f.name.endsWith(".net"));
       const cluFiles = files.filter((f) => f.name.endsWith(".clu"));
-      if (netFiles.length !== 1 || cluFiles.length !== 1) {
-        setError("Please select both a .net and a .clu file.");
+      if (netFiles.length !== 1) {
+        setError("Please select a .net file.");
         return;
       }
 
@@ -56,14 +57,35 @@ export default function Load({
     }
   };
 
-  const readFiles = async (netFile: File, cluFile: File) => {
+  const readFiles = async (netFile: File, cluFile?: File) => {
     try {
       console.time("readFiles");
-      const [net, clu] = await Promise.all([
-        readFile(netFile),
-        readFile(cluFile),
-      ]);
-      setFiles([netFile, cluFile]);
+
+      const [net, clu] = await (async () => {
+        if (cluFile)
+          return await Promise.all([
+            readFile(netFile),
+            readFile(cluFile),
+          ]);
+
+        const network = await readFile(netFile);
+
+        console.time("infomap")
+        const result = await new Infomap().runAsync({
+          network,
+          args: { output: "clu", twoLevel: true, numTrials: 5, silent: true },
+        });
+        console.timeEnd("infomap")
+
+        if (result?.clu_states == null) {
+          throw new Error("No clu_states in result");
+        }
+
+        return [network, result.clu_states];
+      })();
+
+
+      setFiles(cluFile ? [netFile, cluFile]: [netFile]);
       setNet(parseStates(net));
       setClu(parseClu<CluStateNode>(clu));
       console.timeEnd("readFiles");
@@ -97,6 +119,9 @@ export default function Load({
           cluster (<Code fontSize="0.9em">_states.clu</Code>)
         </a>{" "}
         files.
+        <br />
+        If no <Code fontSize="0.9em">_states.clu</Code> file is provided,
+        Infomap will be run with default parameters (5 trials, undirected, two-level).
       </FormHelperText>
 
       {files.length !== 0 && (
