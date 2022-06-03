@@ -144,6 +144,7 @@ export default function SVGRenderer({
               r={state.radius}
               fill={state.fill}
               stroke={state.stroke}
+              pointerEvents="none"
               strokeWidth={2}
             />
           ))}
