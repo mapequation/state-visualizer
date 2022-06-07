@@ -10,6 +10,7 @@
     "@mapequation/c3": "^1.1.1",
     "@mapequation/infomap": "^2.3.0",
     "@mapequation/infomap-parser": "^1.0.1",
+    "@mapequation/infomap-react": "^1.0.0",
     "@types/d3": "^7.1.0",
     "@types/node": "^17.0.0",
     "@types/react": "^18.0.0",
@@ -32,7 +33,9 @@
     "deploy": "ssh mapequation \"rm -rf /var/www/state-visualizer/static\" && scp -r build/* mapequation:/var/www/state-visualizer"
   },
   "eslintConfig": {
-    "extends": ["react-app"]
+    "extends": [
+      "react-app"
+    ]
   },
   "browserslist": {
     "production": [
