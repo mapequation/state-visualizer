@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
 import { parseClu } from "@mapequation/infomap-parser";
-import Infomap from "@mapequation/infomap";
+import { useInfomap } from "@mapequation/infomap-react";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
 import readFile from "../lib/read-file";
@@ -33,6 +33,13 @@ export default function Load({
   const [clu, setClu] = useState(parseClu<CluStateNode>(defaultClu));
   const [net, setNet] = useState(parseStates(defaultNet));
   const [error, setError] = useState<string | null>(null);
+
+  const { runAsync, running } = useInfomap({
+    output: ["clu", "states"],
+    twoLevel: true,
+    silent: true,
+    numTrials: 5
+  });
 
   useEffect(() => {
     console.time("merge");
@@ -61,32 +68,41 @@ export default function Load({
     try {
       console.time("readFiles");
 
-      const [net, clu] = await (async () => {
+      const [net, clu, states] = await (async () => {
         if (cluFile)
           return await Promise.all([
             readFile(netFile),
-            readFile(cluFile),
+            readFile(cluFile)
           ]);
 
         const network = await readFile(netFile);
 
-        console.time("infomap")
-        const result = await new Infomap().runAsync({
-          network,
-          args: { output: "clu", twoLevel: true, numTrials: 5, silent: true },
-        });
-        console.timeEnd("infomap")
+        console.time("infomap");
+        const result = await runAsync({ network });
+        console.timeEnd("infomap");
 
         if (result?.clu_states == null) {
           throw new Error("No clu_states in result");
         }
 
-        return [network, result.clu_states];
+        if (result?.states == null) {
+          throw new Error("No states in result");
+        }
+
+        return [network, result.clu_states, result.states];
       })();
 
 
-      setFiles(cluFile ? [netFile, cluFile]: [netFile]);
-      setNet(parseStates(net));
+      setFiles(cluFile ? [netFile, cluFile] : [netFile]);
+
+      const network = (() => {
+        try {
+          return parseStates(net);
+        } catch (e) {
+          return parseStates(states!);
+        }
+      })();
+      setNet(network);
       setClu(parseClu<CluStateNode>(clu));
       console.timeEnd("readFiles");
     } catch (e: any) {
@@ -105,7 +121,7 @@ export default function Load({
         accept=".net,.clu"
         onChange={handleChange}
       />
-      <Button as="label" htmlFor="file-upload" colorScheme="blue" size="sm">
+      <Button as="label" htmlFor="file-upload" colorScheme="blue" size="sm" isDisabled={running} isLoading={running}>
         Load files
       </Button>
       <FormHelperText>

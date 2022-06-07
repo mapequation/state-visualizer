@@ -95,6 +95,10 @@ export default function parseStates(lines: string | string[]): StateNetwork {
     });
   }
 
+  if (states.length === 0) {
+    throw new Error("could not parse states");
+  }
+
   return { nodes, states, links };
 }
 
