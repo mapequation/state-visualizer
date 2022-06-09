@@ -67,7 +67,7 @@ export default function Network({
   }
 
   for (const state of states) {
-    state.fill = fillColor[state.moduleId];
+    state.fill = fillColor[state.moduleId - 1];
     state.stroke = d3.rgb(state.fill).darker().toString();
     state.radius = stateRadius(state.flow);
   }
