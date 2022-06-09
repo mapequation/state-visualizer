@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import {
+  chakra,
   Button,
   Code,
   FormControl,
@@ -11,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
 import { parseClu } from "@mapequation/infomap-parser";
+import Infomap from "@mapequation/infomap";
 import { useInfomap } from "@mapequation/infomap-react";
 import type { CluStateNode } from "@mapequation/infomap/filetypes";
 import parseStates from "../lib/parse-states";
@@ -36,8 +38,6 @@ export default function Load({
 
   const { runAsync, running } = useInfomap({
     output: ["clu", "states"],
-    twoLevel: true,
-    silent: true,
     numTrials: 5
   });
 
@@ -65,50 +65,44 @@ export default function Load({
   };
 
   const readFiles = async (netFile: File, cluFile?: File) => {
+    console.time("readFiles");
     try {
-      console.time("readFiles");
 
-      const [net, clu, states] = await (async () => {
-        if (cluFile)
-          return await Promise.all([
-            readFile(netFile),
-            readFile(cluFile)
-          ]);
+      const [net, clu] = await (async () => {
+        let clu = undefined;
+        if (cluFile) {
+          clu = await readFile(cluFile);
+        }
 
         const network = await readFile(netFile);
 
         console.time("infomap");
-        const result = await runAsync({ network });
+        const result = await runAsync({ network, args: { noInfomap: clu !== undefined } });
         console.timeEnd("infomap");
 
-        if (result?.clu_states == null) {
-          throw new Error("No clu_states in result");
+        if (result?.clu_states == null && clu === undefined) {
+          throw new Error("No clu states in result");
+        }
+
+        if (clu === undefined) {
+          clu = result.clu_states;
         }
 
         if (result?.states == null) {
           throw new Error("No states in result");
         }
 
-        return [network, result.clu_states, result.states];
+        return [result.states, clu as string];
       })();
-
 
       setFiles(cluFile ? [netFile, cluFile] : [netFile]);
 
-      const network = (() => {
-        try {
-          return parseStates(net);
-        } catch (e) {
-          return parseStates(states!);
-        }
-      })();
-      setNet(network);
+      setNet(parseStates(net));
       setClu(parseClu<CluStateNode>(clu));
-      console.timeEnd("readFiles");
     } catch (e: any) {
       setError(e?.message);
-      return;
     }
+    console.timeEnd("readFiles");
   };
 
   return (
@@ -135,9 +129,9 @@ export default function Load({
           cluster (<Code fontSize="0.9em">_states.clu</Code>)
         </a>{" "}
         files.
-        <br />
+        <chakra.br mb={2} />
         If no <Code fontSize="0.9em">_states.clu</Code> file is provided,
-        Infomap will be run with default parameters (5 trials, undirected, two-level).
+        Infomap&nbsp;v{Infomap.__version__} will be run with default parameters and 5 trials.
       </FormHelperText>
 
       {files.length !== 0 && (
