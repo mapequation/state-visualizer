@@ -27,6 +27,9 @@ interface SettingsProps {
   setShowNames: (showNames: boolean) => void;
   linkDistance: number;
   setLinkDistance: (linkDistance: number) => void;
+  linkThreshold: number;
+  setLinkThreshold: (linkThreshold: number) => void;
+  maxLinkWeight: number;
   linkWidthRange: number[];
   setLinkWidthRange: (linkWidthRange: number[]) => void;
   nodeCharge: number;
@@ -46,6 +49,9 @@ export default function Settings({
   setShowNames,
   linkDistance,
   setLinkDistance,
+  linkThreshold,
+  setLinkThreshold,
+  maxLinkWeight,
   linkWidthRange,
   setLinkWidthRange,
   nodeCharge,
@@ -55,6 +61,7 @@ export default function Settings({
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
+  const [showLinkThresholdTooltip, setShowLinkThresholdTooltip] = useState(false);
   const [showNodeChargeTooltip, setShowNodeChargeTooltip] = useState(false);
   const [showFontSizeTooltip, setShowFontSizeTooltip] = useState(false);
 
@@ -155,6 +162,33 @@ export default function Settings({
             placement="top"
             isOpen={showLinkDistanceTooltip}
             label={linkDistance}
+          >
+            <SliderThumb />
+          </Tooltip>
+        </Slider>
+      </HStack>
+
+      <HStack alignItems="center" mt={5}>
+        <FormLabel w="60%">Link threshold</FormLabel>
+        <Slider
+          defaultValue={linkThreshold}
+          min={0}
+          step={maxLinkWeight / 100}
+          max={maxLinkWeight}
+          onChangeEnd={(v) => setLinkThreshold(v)}
+          onMouseEnter={() => setShowLinkThresholdTooltip(true)}
+          onMouseLeave={() => setShowLinkThresholdTooltip(false)}
+        >
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <Tooltip
+            hasArrow
+            bg="blue.500"
+            color="white"
+            placement="top"
+            isOpen={showLinkThresholdTooltip}
+            label={linkThreshold.toPrecision(maxLinkWeight.toString().length)}
           >
             <SliderThumb />
           </Tooltip>

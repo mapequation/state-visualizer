@@ -34,4 +34,7 @@ export type NetworkDatum = {
   nodes: NodeDatum[];
   states: StateNodeDatum[];
   links: LinkDatum[];
+  maxLinkWeight: number;
+  nodeFlowExtent: number[];
+  stateFlowExtent: number[];
 };

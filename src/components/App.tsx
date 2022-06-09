@@ -14,6 +14,7 @@ import Load from "./Load";
 import ErrorBoundary from "../ErrorBoundary";
 import lumpStateNodes from "../lib/lump-states";
 import type { FlowStateNetwork } from "../lib/merge-states-clu";
+import networkToDatum from "../lib/network-to-datum";
 
 const params = Object.fromEntries(
   new URLSearchParams(window.location.search).entries()
@@ -26,6 +27,7 @@ export default function App() {
   const [showNames, setShowNames] = useState(true);
   const [fontSize, setFontSize] = useState(40);
   const [linkDistance, setLinkDistance] = useState(100);
+  const [linkThreshold, setLinkThreshold] = useState(0);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
   const [nodeCharge, setNodeCharge] = useState(-300);
   const [renderer, setRenderer] = useState<Renderer>(
@@ -37,7 +39,7 @@ export default function App() {
     console.time("lump");
     const net = useLumping ? lumpStateNodes(network) : network;
     console.timeEnd("lump");
-    return net;
+    return networkToDatum(net);
   }, [network, useLumping]);
 
   return (
@@ -93,6 +95,9 @@ export default function App() {
           setShowNames={setShowNames}
           linkDistance={linkDistance}
           setLinkDistance={setLinkDistance}
+          linkThreshold={linkThreshold}
+          maxLinkWeight={net?.maxLinkWeight ?? 1}
+          setLinkThreshold={setLinkThreshold}
           linkWidthRange={linkWidthRange}
           setLinkWidthRange={setLinkWidthRange}
           nodeCharge={nodeCharge}
@@ -150,6 +155,7 @@ export default function App() {
                 network={net}
                 nodeRadius={40}
                 linkDistance={linkDistance}
+                linkThreshold={linkThreshold}
                 linkWidthRange={linkWidthRange}
                 nodeCharge={nodeCharge}
                 fontSize={fontSize}

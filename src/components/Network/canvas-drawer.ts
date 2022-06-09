@@ -16,6 +16,7 @@ export default function makeDrawer({
   states,
   links,
   showNames,
+  linkThreshold,
 }: MakeDrawerOptions) {
   const minFps = 60;
   const minVisibleLinkWidth = 0.005;
@@ -37,7 +38,7 @@ export default function makeDrawer({
     const minWidth = minVisibleLinkWidth / transform.k;
     for (const link of links) {
       // Assume links are sorted by weight.
-      if (link.width! < minWidth || performance.now() - start > timeBudgetMs) {
+      if (link.width! < minWidth || link.weight < linkThreshold || performance.now() - start > timeBudgetMs) {
         break;
       }
 

@@ -3,18 +3,18 @@ import * as c3 from "@mapequation/c3";
 import { Renderer, useRenderer } from "./Renderer";
 import { useSimulation } from "../../simulation";
 import aggregatePhysicalLinks from "../../lib/aggregate-links";
-import networkToDatum from "../../lib/network-to-datum";
-import type { FlowStateNetwork } from "../../lib/merge-states-clu";
+import type { NetworkDatum } from "../../types/datum";
 
 export interface SharedProps {
   nodeRadius: number;
   showNames: boolean;
   interModuleLinks: boolean;
+  linkThreshold: number;
 }
 
 export interface NetworkProps extends SharedProps {
   renderer?: Renderer;
-  network: FlowStateNetwork;
+  network: NetworkDatum;
   linkDistance?: number;
   linkWidthRange?: number[];
   nodeCharge?: number;
@@ -32,34 +32,23 @@ export default function Network({
   scheme = "Sinebow",
   ...rendererProps
 }: NetworkProps) {
-  const { nodes, states, links } = networkToDatum(network);
+  const { nodes, states, links, maxLinkWeight, nodeFlowExtent, stateFlowExtent } = network;
   const physicalLinks = aggregatePhysicalLinks(links);
-
-  // Sort nodes and links by flow/weight to improve rendering performance.
-  nodes.sort((a, b) => b.flow - a.flow);
-  links.sort((a, b) => b.weight - a.weight);
 
   const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
 
   const fillColor = c3.colors(512, { scheme });
 
-  const linkWidth = (() => {
-    const maxWeight = d3.max(links, (d) => d.weight) as number;
-    return d3.scaleLinear().domain([0, maxWeight]).range(linkWidthRange);
-  })();
+  const linkWidth = d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
 
-  const stateRadius = (() => {
-    const flow = d3.extent(states, (d) => d.flow) as number[];
-    return d3.scaleSqrt().domain(flow).range([2, nodeRadius]);
-  })();
-
-  const flow = d3.extent(nodes, (d) => d.flow) as number[];
+  const stateRadius = d3.scaleSqrt().domain(stateFlowExtent).range([2, nodeRadius]);
 
   const fontSize = d3
     .scaleSqrt()
-    .domain(flow)
+    .domain(nodeFlowExtent)
     .range([15, rendererProps.fontSize]);
-  const radius = d3.scaleSqrt().domain(flow).range([2, nodeRadius]);
+
+  const radius = d3.scaleSqrt().domain(nodeFlowExtent).range([2, nodeRadius]);
 
   for (const node of nodes) {
     node.fontSize = fontSize(node.flow);
@@ -86,7 +75,7 @@ export default function Network({
     nodeRadius,
     nodeCharge,
     linkDistance,
-    forceCenter,
+    forceCenter
   });
 
   const Renderer = useRenderer(renderer);
