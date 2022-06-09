@@ -9,6 +9,7 @@ import {
   List,
   ListIcon,
   ListItem,
+  Progress,
 } from "@chakra-ui/react";
 import { MdCheckCircle } from "react-icons/md";
 import { parseClu } from "@mapequation/infomap-parser";
@@ -36,7 +37,7 @@ export default function Load({
   const [net, setNet] = useState(parseStates(defaultNet));
   const [error, setError] = useState<string | null>(null);
 
-  const { runAsync, running } = useInfomap({
+  const { runAsync, running, progress } = useInfomap({
     output: ["clu", "states"],
     numTrials: 5
   });
@@ -118,6 +119,7 @@ export default function Load({
       <Button as="label" htmlFor="file-upload" colorScheme="blue" size="sm" isDisabled={running} isLoading={running}>
         Load files
       </Button>
+      {running && <Progress size="xs" mt={2} value={progress} />}
       <FormHelperText>
         Load Infomap{" "}
         <a href="//mapequation.org/infomap/#InputStates">
