@@ -202,8 +202,9 @@ export default function Settings({
         <FormLabel w="60%">Node charge</FormLabel>
         <Slider
           defaultValue={-nodeCharge}
-          min={100}
+          min={10}
           max={1000}
+          step={10}
           onChangeEnd={(v) => setNodeCharge(-v)}
           onMouseEnter={() => setShowNodeChargeTooltip(true)}
           onMouseLeave={() => setShowNodeChargeTooltip(false)}
