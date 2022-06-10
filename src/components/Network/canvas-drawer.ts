@@ -64,7 +64,7 @@ export default function makeDrawer({
       ctx.stroke();
     }
 
-    if (showNames) {
+    if (showNames && performance.now() - start < timeBudgetMs) {
       ctx.textBaseline = "bottom";
       ctx.fillStyle = "#333";
       ctx.strokeStyle = "#fff";
