@@ -20,7 +20,7 @@ export default function makeDrawer({
 }: MakeDrawerOptions) {
   const minFps = 60;
   const minVisibleLinkWidth = 0.005;
-  const minVisibleFontSize = 6;
+  const minVisibleFontSize = 12;
 
   return (
     transform: d3.ZoomTransform,
@@ -71,7 +71,7 @@ export default function makeDrawer({
       ctx.lineWidth = 4;
       ctx.lineJoin = "round";
       ctx.lineCap = "butt";
-      const minFontSize = minVisibleFontSize / transform.k;
+      const minFontSize = minVisibleFontSize / transform.k ;
 
       for (const node of nodes) {
         if (node.fontSize! < minFontSize) {
