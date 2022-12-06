@@ -99,7 +99,7 @@ export default function Load({
       setFiles(cluFile ? [netFile, cluFile] : [netFile]);
 
       setNet(parseStates(net));
-      setClu(parseClu<CluStateNode>(clu));
+      setClu(parseClu<CluStateNode>(clu, undefined, false));
     } catch (e: any) {
       setError(e?.message);
     }
