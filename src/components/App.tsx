@@ -67,6 +67,7 @@ export default function App() {
           </a>
           State Network Visualizer
         </Heading>
+        <small>v{process.env.REACT_APP_VERSION}</small>
 
         <section>
           <Text mt={4}>
