@@ -55,6 +55,15 @@ export default function makeDrawer({
     }
 
     ctx.lineWidth = 2;
+    for (const node of nodes) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius!, 0, 2 * Math.PI);
+      ctx.fillStyle = "#fafafa";
+      ctx.strokeStyle = "#333";
+      ctx.fill();
+      ctx.stroke();
+    }
+
     for (const state of states) {
       ctx.beginPath();
       ctx.arc(state.x, state.y, state.radius!, 0, 2 * Math.PI);
@@ -71,7 +80,7 @@ export default function makeDrawer({
       ctx.lineWidth = 4;
       ctx.lineJoin = "round";
       ctx.lineCap = "butt";
-      const minFontSize = minVisibleFontSize / transform.k ;
+      const minFontSize = minVisibleFontSize / transform.k;
 
       for (const node of nodes) {
         if (node.fontSize! < minFontSize) {
