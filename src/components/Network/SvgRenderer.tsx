@@ -145,6 +145,7 @@ export default function SVGRenderer({
               stroke={state.stroke}
               pointerEvents="none"
               strokeWidth={2}
+              opacity={state.opacity}
             />
           ))}
         </g>

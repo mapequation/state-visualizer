@@ -53,8 +53,7 @@ export default function Network({
 
   const stateRadius = d3
     .scaleSqrt()
-    // .domain(stateFlowExtent)
-    .domain(nodeFlowExtent)
+    .domain([stateFlowExtent[0], nodeFlowExtent[1]])
     .range(nodeRadiusRange);
 
   const fontSize = d3
@@ -66,13 +65,14 @@ export default function Network({
 
   for (const node of nodes) {
     node.fontSize = fontSize(node.flow);
-    node.radius = radius(node.flow);
+    node.radius = radius(node.flow); // * 1.2;
   }
 
   for (const state of states) {
     state.fill = fillColor[state.moduleId - 1];
     state.stroke = d3.rgb(state.fill).darker().toString();
     state.radius = stateRadius(state.flow);
+    state.opacity = 0.8;
   }
 
   for (const link of links) {

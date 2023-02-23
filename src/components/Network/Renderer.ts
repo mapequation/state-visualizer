@@ -6,12 +6,13 @@ import type { Simulation } from "../../simulation";
 import type { LinkDatum, NodeDatum, StateNodeDatum } from "../../types/datum";
 
 export type Renderer = "svg" | "canvas";
+export const renderers: Renderer[] = ["svg", "canvas"]
 
 export function isValidRenderer(
   renderer: string | undefined
 ): renderer is Renderer {
   return (
-    renderer !== undefined && ["svg", "canvas"].includes(renderer)
+    renderer !== undefined && (renderers as string[]).includes(renderer)
   );
 }
 

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormHelperText,
@@ -17,6 +19,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import type { Renderer } from "./Network";
+import { renderers } from "./Network/Renderer";
 
 interface SettingsProps {
   useLumping: boolean;
@@ -303,6 +306,21 @@ export default function Settings({
           </Tooltip>
         </Slider>
       </HStack>
+
+      <FormControl mt={5}>
+        <Flex alignItems="center">
+          <FormLabel htmlFor="renderer" mb="0">
+            Renderer
+          </FormLabel>
+          <ButtonGroup size="sm" isAttached variant="outline">
+            {renderers.map((r) => (
+              <Button isActive={r === renderer} onClick={() => setRenderer(r)}>
+                {r}
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Flex>
+      </FormControl>
     </>
   );
 }

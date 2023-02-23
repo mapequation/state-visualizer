@@ -18,17 +18,18 @@ export type StateNodeDatum = FlowStateNode &
     fill?: string;
     stroke?: string;
     radius?: number;
+    opacity?: number;
   };
 
 export type LinkDatum<NodeDatum extends SimulationNodeDatum = StateNodeDatum> =
   SimulationLinkDatum<NodeDatum> &
-    Omit<Link, "source" | "target"> & {
-      source: NodeDatum;
-      target: NodeDatum;
-      width?: number;
-      stroke?: string;
-      isInter?: boolean;
-    };
+  Omit<Link, "source" | "target"> & {
+    source: NodeDatum;
+    target: NodeDatum;
+    width?: number;
+    stroke?: string;
+    isInter?: boolean;
+  };
 
 export type NetworkDatum = {
   nodes: NodeDatum[];
