@@ -29,6 +29,7 @@ export default function App() {
   const [linkDistance, setLinkDistance] = useState(100);
   const [linkThreshold, setLinkThreshold] = useState(0);
   const [linkWidthRange, setLinkWidthRange] = useState([0.1, 5]);
+  const [nodeRadiusRange, setnodeRadiusRange] = useState([1, 50]);
   const [nodeCharge, setNodeCharge] = useState(-300);
   const [renderer, setRenderer] = useState<Renderer>(
     isValidRenderer(params.mode) ? params.mode : "canvas"
@@ -100,6 +101,8 @@ export default function App() {
           setLinkThreshold={setLinkThreshold}
           linkWidthRange={linkWidthRange}
           setLinkWidthRange={setLinkWidthRange}
+          nodeRadiusRange={nodeRadiusRange}
+          setnodeRadiusRange={setnodeRadiusRange}
           nodeCharge={nodeCharge}
           setNodeCharge={setNodeCharge}
           fontSize={fontSize}
@@ -153,10 +156,10 @@ export default function App() {
               <Network
                 renderer={renderer}
                 network={net}
-                nodeRadius={40}
                 linkDistance={linkDistance}
                 linkThreshold={linkThreshold}
                 linkWidthRange={linkWidthRange}
+                nodeRadiusRange={nodeRadiusRange}
                 nodeCharge={nodeCharge}
                 fontSize={fontSize}
                 showNames={showNames}
