@@ -52,7 +52,7 @@ export default function Network({
 
   for (const node of nodes) {
     node.fontSize = fontSize(node.flow);
-    node.radius = radius(node.flow); // * 1.2;
+    node.radius = radius(node.flow);
   }
 
   for (const state of states) {
@@ -76,7 +76,7 @@ export default function Network({
     nodeRadius,
     nodeCharge,
     linkDistance,
-    forceCenter
+    forceCenter,
   });
 
   const Renderer = useRenderer(renderer);
