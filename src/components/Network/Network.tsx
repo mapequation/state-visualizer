@@ -35,8 +35,6 @@ export default function Network({
   const { nodes, states, links, maxLinkWeight, nodeFlowExtent, stateFlowExtent } = network;
   const physicalLinks = aggregatePhysicalLinks(links);
 
-  const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
-
   const fillColor = c3.colors(512, { scheme });
 
   const linkWidth = d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
@@ -68,6 +66,11 @@ export default function Network({
     link.stroke = !isInter ? link.source.stroke : "#aaa";
     link.width = linkWidth(link.weight);
   }
+
+  // Bug when switching force center coordinates between renderers.
+  // Work-around: shift svg viewbox instead.
+  //const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
+  const forceCenter = undefined;
 
   const simulation = useSimulation({
     nodes,

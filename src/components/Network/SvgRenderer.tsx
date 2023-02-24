@@ -61,6 +61,7 @@ export default function SVGRenderer({
     const state = svg.selectAll(".state").data(states);
 
     const link = svg.selectAll(".link").data(links);
+
     const name = svg.selectAll(".name").data(nodes);
 
     simulation.on("tick", () => {
@@ -86,7 +87,7 @@ export default function SVGRenderer({
       xmlns="http://www.w3.org/2000/svg"
       width="100%"
       height="100%"
-      viewBox="0 0 4000 4000"
+      viewBox="-2000 -2000 4000 4000"
     >
       {/*<defs>
         <marker
