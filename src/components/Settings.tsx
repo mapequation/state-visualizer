@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  Button,
+  ButtonGroup,
   Flex,
   FormControl,
   FormHelperText,
@@ -17,6 +19,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import type { Renderer } from "./Network";
+import { renderers } from "./Network";
 
 interface SettingsProps {
   useLumping: boolean;
@@ -58,6 +61,8 @@ export default function Settings({
   setNodeCharge,
   fontSize,
   setFontSize,
+  renderer,
+  setRenderer,
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
@@ -67,6 +72,26 @@ export default function Settings({
 
   return (
     <>
+      <FormControl mt={5}>
+         <FormLabel htmlFor="renderer">Renderer</FormLabel>
+         <ButtonGroup isAttached size="sm">
+           {renderers.map((r) => (
+             <Button
+               key={r}
+               isDisabled={r === renderer}
+               colorScheme={r === renderer? "blue" : "gray"}
+               onClick={() => setRenderer(r)}
+             >
+               {r === "svg" ? "SVG" : "Canvas"}
+             </Button>
+           ))}
+         </ButtonGroup>
+         <FormHelperText>
+           Canvas is faster than SVG.
+         </FormHelperText>
+      </FormControl>
+
+
       <FormControl mt={5}>
         <Flex alignItems="center">
           <FormLabel htmlFor="lumping" mb="0">
