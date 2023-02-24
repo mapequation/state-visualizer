@@ -34,6 +34,8 @@ export default function App() {
   const [renderer, setRenderer] = useState<Renderer>(
     isValidRenderer(params.mode) ? params.mode : "canvas"
   );
+  const [stateOpacity, setStateOpacity] = useState(0.7);
+  const [showPhysicalNodes, setShowPhysicalNodes] = useState(true);
 
   const net = useMemo(() => {
     if (!network) return;
@@ -100,8 +102,8 @@ export default function App() {
           setShowNames={setShowNames}
           linkDistance={linkDistance}
           setLinkDistance={setLinkDistance}
-          linkThreshold={linkThreshold}
           maxLinkWeight={net?.maxLinkWeight ?? 1}
+          linkThreshold={linkThreshold}
           setLinkThreshold={setLinkThreshold}
           linkWidthRange={linkWidthRange}
           setLinkWidthRange={setLinkWidthRange}
@@ -111,6 +113,10 @@ export default function App() {
           setFontSize={setFontSize}
           renderer={renderer}
           setRenderer={setRenderer}
+          showPhysicalNodes={showPhysicalNodes}
+          setShowPhysicalNodes={setShowPhysicalNodes}
+          stateOpacity={stateOpacity}
+          setStateOpacity={setStateOpacity}
         />
 
         <Box as="nav" fontSize="sm" color="gray.500" my={10}>
@@ -166,6 +172,8 @@ export default function App() {
                 fontSize={fontSize}
                 showNames={showNames}
                 interModuleLinks={interModuleLinks}
+                showPhysicalNodes={showPhysicalNodes}
+                stateOpacity={stateOpacity}
               />
             )}
           </ErrorBoundary>

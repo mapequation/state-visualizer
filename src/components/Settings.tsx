@@ -41,6 +41,10 @@ interface SettingsProps {
   setFontSize: (fontSize: number) => void;
   renderer: Renderer;
   setRenderer: (renderer: Renderer) => void;
+  showPhysicalNodes: boolean;
+  setShowPhysicalNodes: (value: boolean) => void;
+  stateOpacity: number;
+  setStateOpacity: (value: number) => void;
 }
 
 export default function Settings({
@@ -63,12 +67,17 @@ export default function Settings({
   setFontSize,
   renderer,
   setRenderer,
+  showPhysicalNodes,
+  setShowPhysicalNodes,
+  stateOpacity,
+  setStateOpacity,
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
   const [showLinkThresholdTooltip, setShowLinkThresholdTooltip] = useState(false);
   const [showNodeChargeTooltip, setShowNodeChargeTooltip] = useState(false);
   const [showFontSizeTooltip, setShowFontSizeTooltip] = useState(false);
+  const [showStateOpacityTooltip, setShowStateOpacityTooltip] = useState(false);
 
   return (
     <>
@@ -136,6 +145,18 @@ export default function Settings({
             id="names"
             isChecked={showNames}
             onChange={(event) => setShowNames(event.target.checked)}
+          />
+        </Flex>
+      </FormControl>
+
+      <FormControl mt={5}>
+        <Flex alignItems="center" mb={0}>
+          <FormLabel htmlFor="phys-nodes">Physical nodes</FormLabel>
+          <Switch
+            size="sm"
+            id="phys-nodes"
+            isChecked={showPhysicalNodes}
+            onChange={(event) => setShowPhysicalNodes(event.target.checked)}
           />
         </Flex>
       </FormControl>
@@ -278,6 +299,33 @@ export default function Settings({
             placement="top"
             isOpen={showNodeChargeTooltip}
             label={-nodeCharge}
+          >
+            <SliderThumb />
+          </Tooltip>
+        </Slider>
+      </HStack>
+
+      <HStack alignItems="center" mt={5}>
+        <FormLabel w="60%">State opacity</FormLabel>
+        <Slider
+          defaultValue={stateOpacity}
+          min={0.1}
+          max={1}
+          step={0.1}
+          onChangeEnd={(v) => setStateOpacity(v)}
+          onMouseEnter={() => setShowStateOpacityTooltip(true)}
+          onMouseLeave={() => setShowStateOpacityTooltip(false)}
+        >
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <Tooltip
+            hasArrow
+            bg="blue.500"
+            color="white"
+            placement="top"
+            isOpen={showStateOpacityTooltip}
+            label={stateOpacity}
           >
             <SliderThumb />
           </Tooltip>

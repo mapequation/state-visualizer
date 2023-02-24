@@ -13,6 +13,8 @@ export default function SVGRenderer({
   nodeRadius,
   showNames,
   interModuleLinks,
+  showPhysicalNodes,
+  stateOpacity,
 }: SVGRendererProps) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -102,20 +104,22 @@ export default function SVGRenderer({
         </marker>
       </defs>*/}
       <g id="zoomable">
-        <g className="nodes">
-          {nodes.map((node) => (
-            <circle
-              className="node"
-              key={node.id}
-              cx={0}
-              cy={0}
-              r={nodeRadius}
-              fill="#fafafa"
-              stroke="#333"
-              strokeWidth={2}
-            />
-          ))}
-        </g>
+        {showPhysicalNodes && (
+          <g className="nodes">
+            {nodes.map((node) => (
+              <circle
+                className="node"
+                key={node.id}
+                cx={0}
+                cy={0}
+                r={node.radius}
+                fill="#fafafa"
+                stroke="#333"
+                strokeWidth={2}
+              />
+            ))}
+          </g>
+        )}
         <g className="links">
           {links.map((link) => (
             <line
@@ -147,7 +151,7 @@ export default function SVGRenderer({
               stroke={state.stroke}
               pointerEvents="none"
               strokeWidth={2}
-              opacity={state.opacity}
+              opacity={stateOpacity}
             />
           ))}
         </g>

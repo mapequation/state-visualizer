@@ -17,6 +17,8 @@ export default function makeDrawer({
   links,
   showNames,
   linkThreshold,
+  showPhysicalNodes,
+  stateOpacity,
 }: MakeDrawerOptions) {
   const minFps = 60;
   const minVisibleLinkWidth = 0.005;
@@ -36,14 +38,16 @@ export default function makeDrawer({
     ctx.scale(transform.k, transform.k);
 
     // Render physical nodes
-    ctx.lineWidth = 2;
-    for (const node of nodes) {
-      ctx.beginPath();
-      ctx.arc(node.x, node.y, node.radius!, 0, 2 * Math.PI);
-      ctx.fillStyle = "#fafafa";
-      ctx.strokeStyle = "#333";
-      ctx.fill();
-      ctx.stroke();
+    if (showPhysicalNodes) {
+      ctx.lineWidth = 2;
+      for (const node of nodes) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius!, 0, 2 * Math.PI);
+        ctx.fillStyle = "#fafafa";
+        ctx.strokeStyle = "#333";
+        ctx.fill();
+        ctx.stroke();
+      }
     }
 
     // Render links
@@ -68,6 +72,7 @@ export default function makeDrawer({
 
     // Render state nodes
     ctx.lineWidth = 2;
+    ctx.globalAlpha = stateOpacity;
     for (const state of states) {
       ctx.beginPath();
       ctx.arc(state.x, state.y, state.radius!, 0, 2 * Math.PI);
@@ -76,6 +81,7 @@ export default function makeDrawer({
       ctx.fill();
       ctx.stroke();
     }
+    ctx.globalAlpha = 1;
 
     if (showNames && performance.now() - start < timeBudgetMs) {
       ctx.textBaseline = "bottom";

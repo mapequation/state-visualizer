@@ -18,7 +18,6 @@ export type StateNodeDatum = FlowStateNode &
     fill?: string;
     stroke?: string;
     radius?: number;
-    opacity?: number;
   };
 
 export type LinkDatum<NodeDatum extends SimulationNodeDatum = StateNodeDatum> =

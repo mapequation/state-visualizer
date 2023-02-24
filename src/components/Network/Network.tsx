@@ -10,6 +10,8 @@ export interface SharedProps {
   showNames: boolean;
   interModuleLinks: boolean;
   linkThreshold: number;
+  showPhysicalNodes: boolean;
+  stateOpacity: number;
 }
 
 export interface NetworkProps extends SharedProps {
@@ -57,7 +59,6 @@ export default function Network({
     state.fill = fillColor[state.moduleId - 1];
     state.stroke = d3.rgb(state.fill).darker().toString();
     state.radius = stateRadius(state.flow);
-    state.opacity = 0.8;
   }
 
   for (const link of links) {
