@@ -6,6 +6,7 @@ import aggregatePhysicalLinks from "../../lib/aggregate-links";
 import type { NetworkDatum } from "../../types/datum";
 
 export interface SharedProps {
+  nodeRadius: number;
   showNames: boolean;
   interModuleLinks: boolean;
   linkThreshold: number;
@@ -16,7 +17,6 @@ export interface NetworkProps extends SharedProps {
   network: NetworkDatum;
   linkDistance?: number;
   linkWidthRange?: number[];
-  nodeRadiusRange?: number[];
   nodeCharge?: number;
   fontSize: number;
   scheme?: c3.SchemeName;
@@ -25,43 +25,30 @@ export interface NetworkProps extends SharedProps {
 export default function Network({
   renderer = "canvas",
   network,
+  nodeRadius = 40,
   linkDistance = 100,
   linkWidthRange = [0.2, 5],
-  nodeRadiusRange = [2, 40],
   nodeCharge = -500,
   scheme = "Sinebow",
   ...rendererProps
 }: NetworkProps) {
-  const {
-    nodes,
-    states,
-    links,
-    maxLinkWeight,
-    nodeFlowExtent,
-    stateFlowExtent,
-  } = network;
+  const { nodes, states, links, maxLinkWeight, nodeFlowExtent, stateFlowExtent } = network;
   const physicalLinks = aggregatePhysicalLinks(links);
 
   const forceCenter = renderer === "svg" ? [2000, 2000] : undefined;
 
   const fillColor = c3.colors(512, { scheme });
 
-  const linkWidth = d3
-    .scaleLinear()
-    .domain([0, maxLinkWeight])
-    .range(linkWidthRange);
+  const linkWidth = d3.scaleLinear().domain([0, maxLinkWeight]).range(linkWidthRange);
 
-  const stateRadius = d3
-    .scaleSqrt()
-    .domain([stateFlowExtent[0], nodeFlowExtent[1]])
-    .range(nodeRadiusRange);
+  const stateRadius = d3.scaleSqrt().domain(stateFlowExtent).range([2, nodeRadius]);
 
   const fontSize = d3
     .scaleSqrt()
     .domain(nodeFlowExtent)
     .range([15, rendererProps.fontSize]);
 
-  const radius = d3.scaleSqrt().domain(nodeFlowExtent).range(nodeRadiusRange);
+  const radius = d3.scaleSqrt().domain(nodeFlowExtent).range([2, nodeRadius]);
 
   for (const node of nodes) {
     node.fontSize = fontSize(node.flow);
@@ -86,9 +73,10 @@ export default function Network({
     nodes,
     states,
     links: physicalLinks,
+    nodeRadius,
     nodeCharge,
     linkDistance,
-    forceCenter,
+    forceCenter
   });
 
   const Renderer = useRenderer(renderer);
@@ -99,6 +87,7 @@ export default function Network({
       nodes={nodes}
       states={states}
       links={links}
+      nodeRadius={nodeRadius}
       {...rendererProps}
     />
   );

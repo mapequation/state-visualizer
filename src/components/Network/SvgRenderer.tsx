@@ -10,6 +10,7 @@ export default function SVGRenderer({
   nodes,
   states,
   links,
+  nodeRadius,
   showNames,
   interModuleLinks,
 }: SVGRendererProps) {
@@ -107,7 +108,7 @@ export default function SVGRenderer({
               key={node.id}
               cx={0}
               cy={0}
-              r={node.radius}
+              r={nodeRadius}
               fill="#fafafa"
               stroke="#333"
               strokeWidth={2}
@@ -161,7 +162,7 @@ export default function SVGRenderer({
                 dominantBaseline="central"
                 fontFamily="Helvetica"
                 fontSize={node.fontSize}
-                dx={node.radius}
+                dx={nodeRadius}
                 dy={-node.fontSize!}
                 fill="#333"
                 stroke="#fff"

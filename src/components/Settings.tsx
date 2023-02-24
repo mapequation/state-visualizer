@@ -1,7 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
-  ButtonGroup,
   Flex,
   FormControl,
   FormHelperText,
@@ -19,7 +17,6 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import type { Renderer } from "./Network";
-import { renderers } from "./Network/Renderer";
 
 interface SettingsProps {
   useLumping: boolean;
@@ -35,8 +32,6 @@ interface SettingsProps {
   maxLinkWeight: number;
   linkWidthRange: number[];
   setLinkWidthRange: (linkWidthRange: number[]) => void;
-  nodeRadiusRange: number[];
-  setnodeRadiusRange: (nodeRadiusRange: number[]) => void;
   nodeCharge: number;
   setNodeCharge: (nodeCharge: number) => void;
   fontSize: number;
@@ -59,20 +54,14 @@ export default function Settings({
   maxLinkWeight,
   linkWidthRange,
   setLinkWidthRange,
-  nodeRadiusRange,
-  setnodeRadiusRange,
   nodeCharge,
   setNodeCharge,
   fontSize,
   setFontSize,
-  renderer,
-  setRenderer,
 }: SettingsProps) {
   const [showLinkDistanceTooltip, setShowLinkDistanceTooltip] = useState(false);
   const [showLinkWidthTooltip, setShowLinkWidthTooltip] = useState(false);
-  const [shownodeRadiusTooltip, setShownodeRadiusTooltip] = useState(false);
-  const [showLinkThresholdTooltip, setShowLinkThresholdTooltip] =
-    useState(false);
+  const [showLinkThresholdTooltip, setShowLinkThresholdTooltip] = useState(false);
   const [showNodeChargeTooltip, setShowNodeChargeTooltip] = useState(false);
   const [showFontSizeTooltip, setShowFontSizeTooltip] = useState(false);
 
@@ -244,43 +233,6 @@ export default function Settings({
       </HStack>
 
       <HStack alignItems="center" mt={5}>
-        <FormLabel w="60%">Node radius</FormLabel>
-        <RangeSlider
-          defaultValue={nodeRadiusRange}
-          min={0}
-          max={100}
-          step={0.1}
-          onChangeEnd={(v) => setnodeRadiusRange(v)}
-          onMouseEnter={() => setShownodeRadiusTooltip(true)}
-          onMouseLeave={() => setShownodeRadiusTooltip(false)}
-        >
-          <RangeSliderTrack>
-            <RangeSliderFilledTrack />
-          </RangeSliderTrack>
-          <Tooltip
-            hasArrow
-            bg="blue.500"
-            color="white"
-            placement="top"
-            isOpen={shownodeRadiusTooltip}
-            label={nodeRadiusRange[0].toString()}
-          >
-            <RangeSliderThumb index={0} />
-          </Tooltip>
-          <Tooltip
-            hasArrow
-            bg="blue.500"
-            color="white"
-            placement="top"
-            isOpen={shownodeRadiusTooltip}
-            label={nodeRadiusRange[1]}
-          >
-            <RangeSliderThumb index={1} />
-          </Tooltip>
-        </RangeSlider>
-      </HStack>
-
-      <HStack alignItems="center" mt={5}>
         <FormLabel w="60%">Node charge</FormLabel>
         <Slider
           defaultValue={-nodeCharge}
@@ -306,21 +258,6 @@ export default function Settings({
           </Tooltip>
         </Slider>
       </HStack>
-
-      <FormControl mt={5}>
-        <Flex alignItems="center">
-          <FormLabel htmlFor="renderer" mb="0">
-            Renderer
-          </FormLabel>
-          <ButtonGroup size="sm" isAttached variant="outline">
-            {renderers.map((r) => (
-              <Button isActive={r === renderer} onClick={() => setRenderer(r)}>
-                {r}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </Flex>
-      </FormControl>
     </>
   );
 }
