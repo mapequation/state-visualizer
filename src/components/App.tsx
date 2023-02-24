@@ -8,6 +8,7 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
+import Infomap from "@mapequation/infomap";
 import Network, { isValidRenderer, Renderer } from "./Network";
 import Settings from "./Settings";
 import Load from "./Load";
@@ -66,7 +67,10 @@ export default function App() {
           </a>
           State Network Visualizer
         </Heading>
-        <small>v{process.env.REACT_APP_VERSION}</small>
+        <Text fontSize="xs" ml="42px" mt="-5px">
+          v{process.env.REACT_APP_VERSION}<br/>
+          Powered by Infomap&nbsp;v{Infomap.__version__}
+        </Text>
 
         <section>
           <Text mt={4}>
