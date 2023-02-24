@@ -35,6 +35,18 @@ export default function makeDrawer({
     ctx.translate(transform.x, transform.y);
     ctx.scale(transform.k, transform.k);
 
+    // Render physical nodes
+    ctx.lineWidth = 2;
+    for (const node of nodes) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius!, 0, 2 * Math.PI);
+      ctx.fillStyle = "#fafafa";
+      ctx.strokeStyle = "#333";
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Render links
     const minWidth = minVisibleLinkWidth / transform.k;
     for (const link of links) {
       // Assume links are sorted by weight.
@@ -54,16 +66,8 @@ export default function makeDrawer({
       ctx.stroke();
     }
 
+    // Render state nodes
     ctx.lineWidth = 2;
-    for (const node of nodes) {
-      ctx.beginPath();
-      ctx.arc(node.x, node.y, node.radius!, 0, 2 * Math.PI);
-      ctx.fillStyle = "#fafafa";
-      ctx.strokeStyle = "#333";
-      ctx.fill();
-      ctx.stroke();
-    }
-
     for (const state of states) {
       ctx.beginPath();
       ctx.arc(state.x, state.y, state.radius!, 0, 2 * Math.PI);
