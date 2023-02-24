@@ -30,7 +30,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "predeploy": "npm run build",
-    "deploy": "ssh mapequation \"rm -rf /var/www/state-visualizer/static\" && scp -r build/* mapequation:/var/www/state-visualizer"
+    "deploy": "ssh mapequation \"rm -rf /var/www/state-visualizer/static/*\" && scp -r build/* mapequation:/var/www/state-visualizer"
   },
   "eslintConfig": {
     "extends": [
