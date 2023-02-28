@@ -75,13 +75,21 @@ export default function SVGRenderer({
           .attr("y2", d.target.y);
       });
 
-      node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+      if (showPhysicalNodes) {
+        node
+          .attr("cx", (d) => d.x)
+          .attr("cy", (d) => d.y);
+      }
 
-      state.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+      state
+        .attr("cx", (d) => d.x)
+        .attr("cy", (d) => d.y);
 
-      name.attr("x", (d) => d.x).attr("y", (d) => d.y);
+      name
+        .attr("x", (d) => d.x)
+        .attr("y", (d) => d.y);
     });
-  }, [ref, nodes, states, links, simulation, stateSimulation]);
+  }, [ref, nodes, states, links, simulation, stateSimulation, showPhysicalNodes]);
 
   return (
     <svg
@@ -104,22 +112,20 @@ export default function SVGRenderer({
         </marker>
       </defs>*/}
       <g id="zoomable">
-        {showPhysicalNodes && (
-          <g className="nodes">
-            {nodes.map((node) => (
-              <circle
-                className="node"
-                key={node.id}
-                cx={0}
-                cy={0}
-                r={node.radius}
-                fill="#fafafa"
-                stroke="#333"
-                strokeWidth={2}
-              />
-            ))}
-          </g>
-        )}
+        <g className="nodes">
+          {showPhysicalNodes && nodes.map((node) => (
+            <circle
+              className="node"
+              key={node.id}
+              cx={0}
+              cy={0}
+              r={node.radius}
+              fill="#fafafa"
+              stroke="#333"
+              strokeWidth={2}
+            />
+          ))}
+        </g>
         <g className="links">
           {links.map((link) => (
             <line
