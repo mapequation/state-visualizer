@@ -78,7 +78,7 @@ export function createSimulation({
   }
 
   simulation.alphaDecay(initialDecay);
-  stateSimulation.alphaDecay(initialDecay);
+  stateSimulation.alphaDecay(0.5 * initialDecay);
 
   if (nodes.length > 1000) {
     simulation.stop();
